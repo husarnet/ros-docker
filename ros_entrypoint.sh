@@ -3,7 +3,11 @@ set -e
 
 case $DDS_CONFIG in
     'HUSARNET_SIMPLE_AUTO')
-        FASTRTPS_DEFAULT_PROFILES_FILE=$(./gen-xml-husarnet-simple-auto.sh fastdds-simple-template.xml)
+        FASTRTPS_DEFAULT_PROFILES_FILE=/dds-conf-husarnet-simple-auto.xml
+        
+        /gen-xml-husarnet-simple-auto.sh \
+            /fastdds-simple-template.xml \
+            $FASTRTPS_DEFAULT_PROFILES_FILE
         ;;
     'HUSARNET_DISCOVERY_SERVER')
         echo DDS_CONFIG=$DDS_CONFIG
