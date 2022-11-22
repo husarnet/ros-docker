@@ -2,21 +2,28 @@
 
 cp $1 $2
 
+HOST_IPV6=$(cat /etc/hosts | grep $HOSTNAME | sed -r 's/([a-f0-9:]*)\s(.*)\s# managed by Husarnet/\1/g')
+
+array=( "defaultUnicastLocatorList" "builtin.metatrafficUnicastLocatorList" )
+for i in "${array[@]}"
+do
+    yq --xml-strict-mode -p=xml -o=xml -i e \
+        '.dds.profiles.participant.rtps.'$i'[] += {"udpv6": {"address": "'$HOSTNAME'" }}' \
+        $2
+done
+            
+
 while IFS="" read -r p || [ -n "$p" ]
 do
     # printf 'line: %s\n' "$p"
 
-    IPV6=$(echo $p | grep "# managed by Husarnet" | sed -r 's/([a-f0-9:]*)\s(.*)\s# managed by Husarnet/\1/g')
+    PEER_IPV6=$(echo $p | grep "# managed by Husarnet" | sed -r 's/([a-f0-9:]*)\s(.*)\s# managed by Husarnet/\1/g')
     #HOSTNAME=$(echo $p | grep "# managed by Husarnet" | sed -r 's/([a-f0-9:]*)\s(.*)\s# managed by Husarnet/\2/g')
 
-    if [[ $IPV6 ]]; then
-        array=( "defaultUnicastLocatorList" "builtin.initialPeersList" "builtin.metatrafficUnicastLocatorList" )
-        for i in "${array[@]}"
-        do
-            yq --xml-strict-mode -p=xml -o=xml -i e \
-                '.dds.profiles.participant.rtps.'$i'[] += {"udpv6": {"address": "'$IPV6'" }}' \
-                $2
-        done
+    if [[ $PEER_IPV6 ]]; then
+        yq --xml-strict-mode -p=xml -o=xml -i e \
+            '.dds.profiles.participant.rtps.builtin.initialPeersList[] += {"udpv6": {"address": "'$PEER_IPV6'" }}' \
+            $2
     fi
 
 done < /etc/hosts
