@@ -8,7 +8,7 @@ array=( "defaultUnicastLocatorList" "builtin.metatrafficUnicastLocatorList" )
 for i in "${array[@]}"
 do
     yq --xml-strict-mode -p=xml -o=xml -i e \
-        '.dds.profiles.participant.rtps.'$i'[] += {"udpv6": {"address": "'$HOSTNAME'" }}' \
+        '.dds.profiles.participant.rtps.'$i'[] += {"udpv6": {"address": "'$HOST_IPV6'" }}' \
         $2
 done
             
