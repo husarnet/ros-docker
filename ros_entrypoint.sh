@@ -3,14 +3,24 @@ set -e
 
 case $DDS_CONFIG in
     'HUSARNET_SIMPLE_AUTO')
-        export FASTRTPS_DEFAULT_PROFILES_FILE=/dds-conf-husarnet-simple-auto.xml
+        export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+        export FASTRTPS_DEFAULT_PROFILES_FILE=/dds-husarnet-simple-auto.xml
         
         /gen-xml-husarnet-simple-auto.sh \
             /fastdds-simple-template.xml \
             $FASTRTPS_DEFAULT_PROFILES_FILE
         ;;
     'HUSARNET_DISCOVERY_SERVER')
-        echo DDS_CONFIG=$DDS_CONFIG
+        export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+        export FASTRTPS_DEFAULT_PROFILES_FILE=/dds-husarnet-ds.xml
+
+        if [[ -v ROS_DISCOVERY_SERVER ]]; then
+            DISCOVERY_SERVER_IPV6=$(cat /etc/hosts | grep $ROS_DISCOVERY_SERVER | sed -r 's/([a-f0-9:]*)\s(.*)\s# managed by Husarnet/\1/g')
+            cat /fastdds-ds-client-template.xml | envsubst > $FASTRTPS_DEFAULT_PROFILES_FILE
+        elif
+            HOST_IPV6=$(cat /etc/hosts | grep $HOSTNAME | sed -r 's/([a-f0-9:]*)\s(.*)\s# managed by Husarnet/\1/g')
+            cat /fastdds-ds-server-template.xml | envsubst > $FASTRTPS_DEFAULT_PROFILES_FILE
+        fi
         ;;
     'ENVSUBST')
         if [ $RMW_IMPLEMENTATION == 'rmw_fastrtps_cpp' ]
@@ -24,8 +34,6 @@ case $DDS_CONFIG in
         fi
         ;;
 esac
-
-echo FASTRTPS_DEFAULT_PROFILES_FILE=$FASTRTPS_DEFAULT_PROFILES_FILE
 
 # setup ros environment
 source "/opt/ros/$ROS_DISTRO/setup.bash"
