@@ -43,7 +43,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build and push (latest only)
-      if: github.ref_name == 'main'
+      if: github.ref_name == 'main' && github.event_name != 'release'
       uses: docker/build-push-action@v2
       with:
         platforms: "linux/amd64, linux/arm64"
@@ -52,3 +52,18 @@ jobs:
           ROS_DISTRO=${{ matrix.ros-distro }}
           TAG=${{ matrix.tag }}
         tags: husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}
+
+    - name: Build and push (release)
+      if: github.ref_name == 'main' && github.event_name == 'release'
+      run: echo ref name ${{ github.ref_name}}
+
+      # uses: docker/build-push-action@v2
+      # with:
+      #   platforms: "linux/amd64, linux/arm64"
+      #   push: true
+      #   build-args: |
+      #     ROS_DISTRO=${{ matrix.ros-distro }}
+      #     TAG=${{ matrix.tag }}
+      #   tags: |
+      #     husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}
+      #     husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}
