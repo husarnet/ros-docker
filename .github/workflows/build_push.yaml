@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   release:
     types: [published]
-    
+
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -20,7 +20,7 @@ jobs:
     - name: Print event name
       run: echo "Event name ${{ github.event_name }}"
 
-    - name: Print branch name
+    - name: Print ref name
       run: echo ${{ github.ref_name}}
 
     - name: Set SHORT_DATE env
@@ -56,16 +56,14 @@ jobs:
         tags: husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}
 
     - name: Build and push (release)
-      if: github.ref_name == 'main' && github.event_name == 'release'
-      run: echo ref name ${{ github.ref_name}}
-
-      # uses: docker/build-push-action@v2
-      # with:
-      #   platforms: "linux/amd64, linux/arm64"
-      #   push: true
-      #   build-args: |
-      #     ROS_DISTRO=${{ matrix.ros-distro }}
-      #     TAG=${{ matrix.tag }}
-      #   tags: |
-      #     husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}
-      #     husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}
+      if: github.event_name == 'release'
+      uses: docker/build-push-action@v2
+      with:
+        platforms: "linux/amd64, linux/arm64"
+        push: true
+        build-args: |
+          ROS_DISTRO=${{ matrix.ros-distro }}
+          TAG=${{ matrix.tag }}
+        tags: |
+          husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}
+          husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}-${{ github.ref_name}}
