@@ -10,18 +10,21 @@ case $DDS_CONFIG in
             /fastdds-simple-template.xml \
             $FASTRTPS_DEFAULT_PROFILES_FILE
         ;;
+        
     'HUSARNET_DISCOVERY_SERVER')
         export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
         export FASTRTPS_DEFAULT_PROFILES_FILE=/dds-husarnet-ds.xml
 
+        export HOST_IPV6=$(cat /etc/hosts | grep $HOSTNAME | sed -r 's/([a-f0-9:]*)\s(.*)\s# managed by Husarnet/\1/g')
+        
         if [[ -v ROS_DISCOVERY_SERVER ]]; then
             export DISCOVERY_SERVER_IPV6=$(cat /etc/hosts | grep $ROS_DISCOVERY_SERVER | sed -r 's/([a-f0-9:]*)\s(.*)\s# managed by Husarnet/\1/g')
             cat /fastdds-ds-client-template.xml | envsubst > $FASTRTPS_DEFAULT_PROFILES_FILE
         else
-            export HOST_IPV6=$(cat /etc/hosts | grep $HOSTNAME | sed -r 's/([a-f0-9:]*)\s(.*)\s# managed by Husarnet/\1/g')
             cat /fastdds-ds-server-template.xml | envsubst > $FASTRTPS_DEFAULT_PROFILES_FILE
         fi
         ;;
+
     'ENVSUBST')
         if [ $RMW_IMPLEMENTATION == 'rmw_fastrtps_cpp' ]; then
             if [[ -v FASTRTPS_DEFAULT_PROFILES_FILE ]]; then

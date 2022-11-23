@@ -16,7 +16,14 @@
                 <userTransports>
                     <transport_id>HusarnetTransport</transport_id>
                 </userTransports>
-                <!-- <useBuiltinTransports>false</useBuiltinTransports> -->
+                <useBuiltinTransports>true</useBuiltinTransports>
+                <defaultUnicastLocatorList>
+                    <locator>
+                        <udpv6>
+                            <address>$HOST_IPV6</address>
+                        </udpv6>
+                    </locator>
+                </defaultUnicastLocatorList>
                 <builtin>
                     <discovery_config>
                         <discoveryProtocol>SUPER_CLIENT</discoveryProtocol>
@@ -33,6 +40,13 @@
                             </RemoteServer>
                         </discoveryServersList>
                     </discovery_config>
+                    <metatrafficUnicastLocatorList>
+                        <locator>
+                            <udpv6>
+                                <address>$HOST_IPV6</address>
+                            </udpv6>
+                        </locator>
+                    </metatrafficUnicastLocatorList>
                 </builtin>
             </rtps>
         </participant>
