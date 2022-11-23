@@ -3,7 +3,9 @@ name: Build/Publish Docker Image
 on:
   push:
   workflow_dispatch:
-
+  release:
+    types: [published]
+    
 jobs:
   build:
     runs-on: ubuntu-20.04
