@@ -8,7 +8,8 @@ services:
     depends_on: 
       husarnet: { condition: service_healthy }
     environment:
-      - DDS_CONFIG=HUSARNET_SIMPLE_AUTO
+      - DDS_CONFIG
+      - ROS_DISCOVERY_SERVER
     command: ros2 run demo_nodes_cpp ${CHATTER_ROLE}
 
   husarnet:
