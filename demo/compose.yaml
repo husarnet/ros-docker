@@ -1,6 +1,9 @@
 services:
   chatter:
-    build: .
+    build:
+      context: .
+      args:
+        - ROS_DISTRO=${ROS_DISTRO}
     network_mode: service:husarnet
     depends_on: 
       husarnet: { condition: service_healthy }

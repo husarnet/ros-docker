@@ -1,3 +1,5 @@
+ARG ROS_DISTRO
+
 FROM husarnet/ros:$ROS_DISTRO-ros-core
 
 # install ros package
