@@ -1,0 +1,25 @@
+services:
+  chatter:
+    build: .
+    network_mode: service:husarnet
+    depends_on: 
+      husarnet: { condition: service_healthy }
+    environment:
+      - DDS_CONFIG=HUSARNET_SIMPLE_AUTO
+    command: ros2 run demo_nodes_cpp ${CHATTER_ROLE}
+
+  husarnet:
+    image: husarnet/husarnet:2.0.13
+    volumes:
+      - /var/lib/husarnet
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    environment: 
+      - HOSTNAME=${CHATTER_ROLE}
+      - JOINCODE
+      - WAIT_HOSTNAMES
+      - HUSARNET_DEBUG=1

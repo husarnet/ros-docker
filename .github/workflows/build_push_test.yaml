@@ -7,7 +7,7 @@ on:
     types: [published]
 
 jobs:
-  build:
+  build_push:
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
@@ -17,14 +17,8 @@ jobs:
 
     steps:
 
-    - name: Print event name
-      run: echo "Event name ${{ github.event_name }}"
-
-    - name: Print ref name
-      run: echo ${{ github.ref_name}}
-
-    - name: Set SHORT_DATE env
-      run: echo "SHORT_DATE=$(date +%y-%m-%d)" >> $GITHUB_ENV
+    - name: Print event name and ref name
+      run: echo "Event name - ${{ github.event_name }}, ref name - ${{ github.ref_name}}"
 
     - name: Checkout
       uses: actions/checkout@v2
@@ -67,3 +61,28 @@ jobs:
         tags: |
           husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}
           husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}-${{ github.ref_name}}
+
+  test:
+    needs: job1
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        ros-distro: [humble]
+        chatter-role: [talker, listener]
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: run test for ${{ matrix.chatter-role }}
+      continue-on-error: true
+      timeout-minutes: 1
+      run: |
+        cd demo
+        export ROS_DISTRO=${{ matrix.ros-distro }}
+        export CHATTER_ROLE=${{ matrix.chatter-role }}
+        export WAIT_HOSTNAMES=talker,listener
+        export JOINCODE=${{ secrets.JOINCODE }}
+        docker compose up | tee output.txt
