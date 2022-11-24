@@ -103,11 +103,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros-distro: [humble]
         include:
-          - chatter-role: talker-ds
+          - ros-distro: humble
+            chatter-role: talker-ds
             discovery-server: ""
-          - chatter-role: listener-ds
+          - ros-distro: humble
+            chatter-role: listener-ds
             discovery-server: "talker-ds"
         
     steps:
