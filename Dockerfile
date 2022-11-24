@@ -21,6 +21,7 @@ SHELL ["/bin/bash", "-c"]
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
         ros-$ROS_DISTRO-rmw-fastrtps-cpp \
         ros-$ROS_DISTRO-rmw-cyclonedds-cpp \
+        net-tools \
         gettext-base && \
     apt-get upgrade -y && \
     apt-get clean && \

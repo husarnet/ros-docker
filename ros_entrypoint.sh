@@ -15,7 +15,7 @@ case $DDS_CONFIG in
         export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
         export FASTRTPS_DEFAULT_PROFILES_FILE=/dds-husarnet-ds.xml
 
-        export HOST_IPV6=$(cat /etc/hosts | grep $HOSTNAME | sed -r 's/([a-f0-9:]*)\s(.*)\s# managed by Husarnet/\1/g')
+        export HOST_IPV6=$(ifconfig hnet0 | grep 'inet6 .* prefixlen 16' | sed -r 's/\s*inet6 ([a-f0-9:]*)\s\sprefixlen 16.*/\1/g')
         
         if [[ -v ROS_DISCOVERY_SERVER ]]; then
             export DISCOVERY_SERVER_IPV6=$(cat /etc/hosts | grep $ROS_DISCOVERY_SERVER | sed -r 's/([a-f0-9:]*)\s(.*)\s# managed by Husarnet/\1/g')

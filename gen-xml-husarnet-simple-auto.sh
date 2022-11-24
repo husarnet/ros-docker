@@ -2,7 +2,7 @@
 
 cp $1 $2
 
-HOST_IPV6=$(cat /etc/hosts | grep $HOSTNAME | sed -r 's/([a-f0-9:]*)\s(.*)\s# managed by Husarnet/\1/g')
+HOST_IPV6=$(ifconfig hnet0 | grep 'inet6 .* prefixlen 16' | sed -r 's/\s*inet6 ([a-f0-9:]*)\s\sprefixlen 16.*/\1/g')
 
 array=( "defaultUnicastLocatorList" "builtin.metatrafficUnicastLocatorList" )
 for i in "${array[@]}"
