@@ -101,7 +101,7 @@ jobs:
         include:
           - chatter-role: talker
             discovery-server: ""
-          - chatter-role: listener:
+          - chatter-role: listener
             discovery-server: "talker"
         
     steps:
