@@ -36,7 +36,7 @@ services:
     devices:
       - /dev/net/tun
     environment: 
-      - HOSTNAME=${CHATTER_ROLE}
+      - HOSTNAME
       - JOINCODE
       - WAIT_HOSTNAMES
       - HUSARNET_DEBUG=1

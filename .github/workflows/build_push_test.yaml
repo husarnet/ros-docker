@@ -86,6 +86,7 @@ jobs:
         export DDS_CONFIG=HUSARNET_SIMPLE_AUTO
         export WAIT_HOSTNAMES=talker,listener
         export JOINCODE=${{ secrets.JOINCODE }}
+        export HOSTNAME=${{ matrix.chatter-role }}
         docker compose up husarnet chatter | tee output.txt
 
     - name: "Check if the log contains 'Hello World' string"
@@ -98,19 +99,19 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - ros-distro: humble
+          - hostname: talker
             chatter-role: talker
-            hostname: talker
+            ros-distro: humble
             discovery-server: ds
             services-to-run: "husarnet chatter"
-          - ros-distro: humble
+          - hostname: listener
             chatter-role: listener
-            hostname: listener
+            ros-distro: humble
             discovery-server: ds
             services-to-run: "husarnet chatter"
-          - ros-distro: humble
+          - hostname: ds
             chatter-role: listener
-            hostname: ds
+            ros-distro: humble
             discovery-server: ""
             services-to-run: "husarnet chatter discovery-server"
 
@@ -124,13 +125,13 @@ jobs:
       timeout-minutes: 1
       run: |
         cd demo
-        export ROS_DISTRO=${{ matrix.ros-distro }}
-        export CHATTER_ROLE=${{ matrix.chatter-role }}
-        export DDS_CONFIG=HUSARNET_DISCOVERY_SERVER
-        export ROS_DISCOVERY_SERVER=${{ matrix.discovery-server }}
-        export WAIT_HOSTNAMES=ds
         export HOSTNAME=${{ matrix.hostname }}
         export JOINCODE=${{ secrets.JOINCODE }}
+        export WAIT_HOSTNAMES=ds
+        export DDS_CONFIG=HUSARNET_DISCOVERY_SERVER
+        export ROS_DISCOVERY_SERVER=${{ matrix.discovery-server }}
+        export ROS_DISTRO=${{ matrix.ros-distro }}
+        export CHATTER_ROLE=${{ matrix.chatter-role }}
         docker compose up ${{ matrix.services-to-run }} | tee output.txt
 
     - name: "Check if the log contains 'Hello World' string"
