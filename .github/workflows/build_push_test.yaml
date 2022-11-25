@@ -85,7 +85,7 @@ jobs:
       run: |
         echo ROS_DISTRO=${{ matrix.ros-distro }}
         echo CHATTER_ROLE=${{ matrix.chatter-role }}
-        echo WAIT_HOSTNAMES=talker-ds,listener-ds
+        echo WAIT_HOSTNAMES=talker,listener
         echo JOINCODE=${{ secrets.JOINCODE }}
         echo DDS_CONFIG=HUSARNET_DISCOVERY_SERVER
         echo ROS_DISCOVERY_SERVER=${{ matrix.discovery-server }}
@@ -97,7 +97,7 @@ jobs:
         cd demo
         export ROS_DISTRO=${{ matrix.ros-distro }}
         export CHATTER_ROLE=${{ matrix.chatter-role }}
-        export WAIT_HOSTNAMES=talker-ds,listener-ds
+        export WAIT_HOSTNAMES=talker,listener
         export JOINCODE=${{ secrets.JOINCODE }}
         export DDS_CONFIG=HUSARNET_DISCOVERY_SERVER
         export ROS_DISCOVERY_SERVER=${{ matrix.discovery-server }}
