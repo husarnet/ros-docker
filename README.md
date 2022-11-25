@@ -4,7 +4,7 @@ ROS docker images with built-in configs for Husarnet VPN
 
 ## How to use it?
 
-### Dockerfile
+### `Dockerfile`
 
 ```Dockerfile
 FROM husarnet/ros:humble-ros-base
@@ -25,4 +25,36 @@ RUN mkdir src && \
 
 # ENTRYPOINT ["/ros_entrypoint.sh"] Do not override entrypoint - this is where magic happens
 CMD ros2 run demo_nodes_cpp talker
+```
+
+build with:
+
+```
+docker build -t chatter:humble .
+```
+
+### `compose.yaml`
+
+For computers/robots in the same Husarnet network:
+
+```yaml
+services:
+  chatter:
+    image: chatter:humble
+    network_mode: host
+    ipc: host
+    environment:
+      - DDS_CONFIG=HUSARNET_SIMPLE_AUTO
+    command: ros2 run demo_nodes_cpp talker
+```
+
+```yaml
+services:
+  chatter:
+    image: chatter:humble
+    network_mode: host
+    ipc: host
+    environment:
+      - DDS_CONFIG=HUSARNET_SIMPLE_AUTO
+    command: ros2 run demo_nodes_cpp listener
 ```

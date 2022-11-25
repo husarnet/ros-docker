@@ -17,17 +17,19 @@ case $DDS_CONFIG in
 
         export HOST_IPV6=$(ifconfig hnet0 | grep 'inet6 .* prefixlen 16' | sed -r 's/\s*inet6 ([a-f0-9:]*)\s\sprefixlen 16.*/\1/g')
         
-        if [[ -v ROS_DISCOVERY_SERVER ]]; then
+        if [[ -z $ROS_DISCOVERY_SERVER ]]; then
+            # server config
+            cat /fastdds-ds-server-template.xml | envsubst > $FASTRTPS_DEFAULT_PROFILES_FILE
+        else
+            # client config
             export DISCOVERY_SERVER_IPV6=$(cat /etc/hosts | grep $ROS_DISCOVERY_SERVER | sed -r 's/([a-f0-9:]*)\s(.*)\s# managed by Husarnet/\1/g')
             cat /fastdds-ds-client-template.xml | envsubst > $FASTRTPS_DEFAULT_PROFILES_FILE
-        else
-            cat /fastdds-ds-server-template.xml | envsubst > $FASTRTPS_DEFAULT_PROFILES_FILE
         fi
         ;;
 
     'ENVSUBST')
         if [ $RMW_IMPLEMENTATION == 'rmw_fastrtps_cpp' ]; then
-            if [[ -v FASTRTPS_DEFAULT_PROFILES_FILE ]]; then
+            if [[ -n $FASTRTPS_DEFAULT_PROFILES_FILE ]]; then
                 auxfile="/dds-config-aux.xml"
                 cp --attributes-only --preserve $FASTRTPS_DEFAULT_PROFILES_FILE $auxfile
                 cat $FASTRTPS_DEFAULT_PROFILES_FILE | envsubst > $auxfile
