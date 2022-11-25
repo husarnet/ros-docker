@@ -26,6 +26,7 @@ services:
 
   husarnet:
     image: husarnet/husarnet:2.0.13
+    ipc: shareable
     volumes:
       - /var/lib/husarnet
     sysctls:
