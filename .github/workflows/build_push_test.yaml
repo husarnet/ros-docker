@@ -100,16 +100,19 @@ jobs:
         include:
           - ros-distro: humble
             chatter-role: talker
-            discovery-server: "ds"
+            hostname: talker
+            discovery-server: ds
             services-to-run: "husarnet chatter"
           - ros-distro: humble
             chatter-role: listener
-            discovery-server: "ds"
+            hostname: listener
+            discovery-server: ds
             services-to-run: "husarnet chatter"
           - ros-distro: humble
-            chatter-role: "ds"
+            chatter-role: listener
+            hostname: ds
             discovery-server: ""
-            services-to-run: "husarnet discovery-server"
+            services-to-run: "husarnet chatter discovery-server"
 
     steps:
 
@@ -126,6 +129,7 @@ jobs:
         export DDS_CONFIG=HUSARNET_DISCOVERY_SERVER
         export ROS_DISCOVERY_SERVER=${{ matrix.discovery-server }}
         export WAIT_HOSTNAMES=ds
+        export HOSTNAME=${{ matrix.hostname }}
         export JOINCODE=${{ secrets.JOINCODE }}
         docker compose up ${{ matrix.services-to-run }} | tee output.txt
 
