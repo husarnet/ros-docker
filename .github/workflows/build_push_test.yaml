@@ -63,7 +63,7 @@ jobs:
           husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}-${{ github.ref_name}}
 
   test_discovery_server:
-    needs: test_simple
+    needs: build_push
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
@@ -107,7 +107,7 @@ jobs:
       run: "if [[ $(grep 'Hello World' demo/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
 
   test_simple:
-    needs: build_push
+    needs: test_discovery_server
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
