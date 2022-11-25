@@ -112,7 +112,7 @@ jobs:
           - hostname: ds
             chatter-role: listener
             ros-distro: humble
-            discovery-server: ""
+            discovery-server: ds
             services-to-run: "husarnet chatter discovery-server"
 
     steps:
