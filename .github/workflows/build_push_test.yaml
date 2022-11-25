@@ -107,7 +107,7 @@ jobs:
             discovery-server: "ds"
             services-to-run: "husarnet chatter"
           - ros-distro: humble
-            chatter-role: ""
+            chatter-role: "ds"
             discovery-server: ""
             services-to-run: "husarnet discovery-server"
 
