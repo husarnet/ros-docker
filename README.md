@@ -1,13 +1,15 @@
 # ros
 
-ROS docker images with built-in configs for Husarnet VPN
+ROS docker images with built-in configs for Husarnet VPN.
+
+[![Build/Publish Docker Image](https://github.com/husarnet/ros/actions/workflows/build_push_test.yaml/badge.svg)](https://github.com/husarnet/ros/actions/workflows/build_push_test.yaml)
 
 ## Available envs
 
 - `DDS-CONFIG=HUSARNET_SIMPLE_AUTO` - activates simple DDS discovery mechnism with all Husarnet peers listed in a XML DDS config file.
-- `DDS_CONFIG=HUSARNET_DISCOVERY_SERVER` - activates [Fast DDS Discovery Server](https://docs.ros.org/en/humble/Tutorials/Advanced/Discovery-Server/Discovery-Server.html) mechanism that works only for devices within the same Husarnet network. Additional env `ROS_DISCOVERY_SERVER` pointing on the hostname of the device running a discovery server need to be set for each "client" devices (see example below for details)
-- `DDS_CONFIG=ENVSUBST` - allows you to bind mount the DDS XML config file to the containers that has environment variables inside. Those envs need to be set before the container startup.
-s
+- `DDS_CONFIG=HUSARNET_DISCOVERY_SERVER` - activates [Fast DDS Discovery Server](https://docs.ros.org/en/humble/Tutorials/Advanced/Discovery-Server/Discovery-Server.html) mechanism that works only for devices within the same Husarnet network. Additional env `ROS_DISCOVERY_SERVER` pointing to the hostname of the device running a discovery server need to be set for each "client" devices (see example below for details)
+- `DDS_CONFIG=ENVSUBST` - allows you to bind mount the DDS XML config files with environment variables. Those envs need to be set before the container startup, because they are evaluated in the `entrypoint`.
+
 ## How to use it?
 
 ### `Dockerfile`
@@ -29,7 +31,7 @@ RUN mkdir src && \
     source /opt/ros/$ROS_DISTRO/setup.bash && \
     colcon build
 
-# ENTRYPOINT ["/ros_entrypoint.sh"] Do not override entrypoint - this is where magic happens
+# ENTRYPOINT ["/ros_entrypoint.sh"] Do not override the entrypoint - this is where magic happens
 CMD ros2 run demo_nodes_cpp talker
 ```
 
@@ -67,9 +69,9 @@ services:
     command: ros2 run demo_nodes_cpp listener
 ```
 
-#### `HUSARNET_SIMPLE_AUTO` setting
+#### `HUSARNET_DISCOVERY_SERVER` setting
 
-First, run the discovery server on 1st device (further we assume that the Husarnet hostname of a discovery server device is `ds`)
+First, run the discovery server on the 1st device (we assume further that the Husarnet hostname of a discovery server device is `ds`)
 
 ```yaml
 services:
