@@ -116,6 +116,15 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: print envs
+      run: |
+        echo ROS_DISTRO=${{ matrix.ros-distro }}
+        echo CHATTER_ROLE=${{ matrix.chatter-role }}
+        echo WAIT_HOSTNAMES=talker-ds,listener-ds
+        echo JOINCODE=${{ secrets.JOINCODE }}
+        echo DDS_CONFIG=HUSARNET_DISCOVERY_SERVER
+        echo ROS_DISCOVERY_SERVER=${{ matrix.discovery-server }}
+
     - name: run test for ${{ matrix.chatter-role }}
       continue-on-error: true
       timeout-minutes: 1
