@@ -3,12 +3,21 @@ set -e
 
 case $DDS_CONFIG in
     'HUSARNET_SIMPLE_AUTO')
-        export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-        export FASTRTPS_DEFAULT_PROFILES_FILE=/dds-husarnet-simple-auto.xml
+        if [ $RMW_IMPLEMENTATION == 'rmw_fastrtps_cpp' ]; then
+            export FASTRTPS_DEFAULT_PROFILES_FILE=/dds-husarnet-simple-auto-fastdds.xml
         
-        /gen-xml-husarnet-simple-auto.sh \
-            /fastdds-simple-template.xml \
-            $FASTRTPS_DEFAULT_PROFILES_FILE
+            /gen-xml-simple-fastdds.sh \
+                /dds-config-templates/fastdds-simple.xml \
+                $FASTRTPS_DEFAULT_PROFILES_FILE
+
+        elif [ $RMW_IMPLEMENTATION == 'rmw_cyclonedds_cpp' ]; then
+            DDS_CONFIG_OUTPUT=/dds-husarnet-simple-auto-cyclonedds.xml
+            export CYCLONEDDS_URI=file://$DDS_CONFIG_OUTPUT
+
+            /gen-xml-simple-cyclonedds.sh \
+                /dds-config-templates/cyclonedds-simple.xml \
+                $DDS_CONFIG_OUTPUT
+        fi
         ;;
         
     'HUSARNET_DISCOVERY_SERVER')
@@ -30,10 +39,18 @@ case $DDS_CONFIG in
     'ENVSUBST')
         if [ $RMW_IMPLEMENTATION == 'rmw_fastrtps_cpp' ]; then
             if [[ -n $FASTRTPS_DEFAULT_PROFILES_FILE ]]; then
-                auxfile="/dds-config-aux.xml"
-                cp --attributes-only --preserve $FASTRTPS_DEFAULT_PROFILES_FILE $auxfile
-                cat $FASTRTPS_DEFAULT_PROFILES_FILE | envsubst > $auxfile
-                export FASTRTPS_DEFAULT_PROFILES_FILE=$auxfile
+                AUXFILE="/dds-config-aux.xml"
+                cp --attributes-only --preserve $FASTRTPS_DEFAULT_PROFILES_FILE $AUXFILE
+                cat $FASTRTPS_DEFAULT_PROFILES_FILE | envsubst > $AUXFILE
+                export FASTRTPS_DEFAULT_PROFILES_FILE=$AUXFILE
+            fi
+        elif [ $RMW_IMPLEMENTATION == 'rmw_cyclonedds_cpp' ]; then
+            if [[ -n $CYCLONEDDS_URI ]]; then
+                DDS_CONFIG_OUTPUT=$(echo $CYCLONEDDS_URI | sed -r 's/file:\/\/(.*)/\1/g')
+                AUXFILE="/dds-config-aux.xml"
+                cp --attributes-only --preserve $DDS_CONFIG_OUTPUT $AUXFILE
+                cat $DDS_CONFIG_OUTPUT | envsubst > $AUXFILE
+                export CYCLONEDDS_URI=file://$AUXFILE
             fi
         fi
         ;;

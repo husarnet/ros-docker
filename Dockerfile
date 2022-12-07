@@ -4,7 +4,7 @@ ARG TAG=core
 FROM ubuntu:20.04 AS yq-getter
 
 ARG TARGETARCH
-ARG YQ_VERSION=v4.30.4 
+ARG YQ_VERSION=v4.30.5 
 
 SHELL ["/bin/bash", "-c"]
 
