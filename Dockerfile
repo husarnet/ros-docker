@@ -8,7 +8,7 @@ ARG YQ_VERSION=v4.30.5
 
 SHELL ["/bin/bash", "-c"]
 
-RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+RUN apt-get update && apt-get install -y \
         wget
 
 RUN wget https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${TARGETARCH} -O /usr/bin/yq &&\
