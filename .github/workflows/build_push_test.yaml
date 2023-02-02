@@ -123,6 +123,12 @@ jobs:
         export HOSTNAME=${{ matrix.chatter-role }}
         docker compose up husarnet chatter | tee output.txt
 
+    - name: tree
+      run: tree 
+
+    - name: show demo/output.txt content
+      run: cat demo/output.txt
+
     - name: "Check if the log contains 'Hello World' string"
       run: "if [[ $(grep 'Hello World' demo/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
 
