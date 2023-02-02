@@ -3,7 +3,7 @@ ARG TAG=core
 
 FROM ubuntu:20.04 AS husarnet-dds-getter
 
-ARG TARGETARCH=arm64
+ARG TARGETARCH
 ARG HUSARNET_DDS_RELEASE="v1.0.0"
 
 RUN apt update && apt install -y \
