@@ -92,7 +92,7 @@ jobs:
         docker compose up husarnet chatter
 
     - name: tree
-      run: docker compose logs chatter | tee output.txt 
+      run: cd demo && docker compose logs chatter | tee output.txt 
 
     - name: tree
       run: tree 
@@ -133,7 +133,7 @@ jobs:
         docker compose up husarnet chatter
 
     - name: tree
-      run: docker compose logs chatter | tee output.txt 
+      run: cd demo && docker compose logs chatter | tee output.txt 
 
     - name: tree
       run: tree 
