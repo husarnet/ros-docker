@@ -89,7 +89,10 @@ jobs:
         export WAIT_HOSTNAMES=talker,listener
         export JOINCODE=${{ secrets.JOINCODE }}
         export HOSTNAME=${{ matrix.chatter-role }}
-        docker compose up husarnet chatter | tee output.txt
+        docker compose up husarnet chatter
+
+    - name: tree
+      run: docker compose logs chatter | tee output.txt 
 
     - name: tree
       run: tree 
@@ -127,7 +130,10 @@ jobs:
         export WAIT_HOSTNAMES=talker,listener
         export JOINCODE=${{ secrets.JOINCODE }}
         export HOSTNAME=${{ matrix.chatter-role }}
-        docker compose up husarnet chatter | tee output.txt
+        docker compose up husarnet chatter
+
+    - name: tree
+      run: docker compose logs chatter | tee output.txt 
 
     - name: tree
       run: tree 
