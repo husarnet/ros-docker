@@ -27,7 +27,7 @@ services:
     command: ros2 run demo_nodes_cpp ${CHATTER_ROLE}
 
   husarnet:
-    image: husarnet/husarnet:2.0.13
+    image: husarnet/husarnet:2.0.22
     ipc: shareable
     volumes:
       - /var/lib/husarnet
