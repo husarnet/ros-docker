@@ -4,12 +4,6 @@ ROS docker images with built-in configs for Husarnet VPN.
 
 [![Build/Publish Docker Image](https://github.com/husarnet/ros/actions/workflows/build_push_test.yaml/badge.svg)](https://github.com/husarnet/ros/actions/workflows/build_push_test.yaml)
 
-## Available envs
-
-- `DDS-CONFIG=HUSARNET_SIMPLE_AUTO` - activates simple DDS discovery mechnism with all Husarnet peers listed in a XML DDS config file.
-- `DDS_CONFIG=HUSARNET_DISCOVERY_SERVER` - activates [Fast DDS Discovery Server](https://docs.ros.org/en/humble/Tutorials/Advanced/Discovery-Server/Discovery-Server.html) mechanism that works only for devices within the same Husarnet network. Additional env `ROS_DISCOVERY_SERVER` pointing to the hostname of the device running a discovery server need to be set for each "client" devices (see example below for details)
-- `DDS_CONFIG=ENVSUBST` - allows you to bind mount the DDS XML config files with environment variables. Those envs need to be set before the container startup, because they are evaluated in the `entrypoint`.
-
 ## How to use it?
 
 ### `Dockerfile`
@@ -17,6 +11,7 @@ ROS docker images with built-in configs for Husarnet VPN.
 ```Dockerfile
 FROM husarnet/ros:humble-ros-base
 
+# install ROS package using apt repository ...
 RUN apt-get update && apt-get install -y \
         ros-$ROS_DISTRO-demo-nodes-cpp && \
     rm -rf /var/lib/apt/lists/*
@@ -24,6 +19,7 @@ RUN apt-get update && apt-get install -y \
 # WORKDIR where you build ROS2 packages should point to /ros2_ws - this directory is used in the ENTRYPOINT
 WORKDIR /ros2_ws 
 
+# ... or from sources
 RUN mkdir src && \
     git clone https://github.com/husarion/rosbot_ros.git src/rosbot_ros -b humble && \
     rosdep update --rosdistro $ROS_DISTRO && \
@@ -45,7 +41,7 @@ docker build -t chatter:humble .
 
 For computers/robots in the same Husarnet network:
 
-#### `HUSARNET_SIMPLE_AUTO` setting
+#### **Fast DDS** - simple discovery
 
 ```yaml
 services:
@@ -54,7 +50,8 @@ services:
     network_mode: host
     ipc: host
     environment:
-      - DDS_CONFIG=HUSARNET_SIMPLE_AUTO
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+      - FASTRTPS_DEFAULT_PROFILES_FILE=/fastdds-simple.xml # place here a path to NON-EXISTING file - it will be created in entrypoint with a Husarnet config
     command: ros2 run demo_nodes_cpp talker
 ```
 
@@ -65,11 +62,12 @@ services:
     network_mode: host
     ipc: host
     environment:
-      - DDS_CONFIG=HUSARNET_SIMPLE_AUTO
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+      - FASTRTPS_DEFAULT_PROFILES_FILE=/fastdds-simple.xml # place here a path to NON-EXISTING file - it will be created in entrypoint with a Husarnet config
     command: ros2 run demo_nodes_cpp listener
 ```
 
-#### `HUSARNET_DISCOVERY_SERVER` setting
+#### **Fast DDS** - discovery server
 
 First, run the discovery server on the 1st device (we assume further that the Husarnet hostname of a discovery server device is `ds`)
 
@@ -80,7 +78,7 @@ services:
     network_mode: host
     ipc: host
     environment:
-      - DDS_CONFIG=HUSARNET_DISCOVERY_SERVER
+      - DISCOVERY_SERVER_PORT=11811
     command: fast-discovery-server -x /dds-husarnet-ds.xml
 ```
 
@@ -93,8 +91,9 @@ services:
     network_mode: host
     ipc: host
     environment:
-      - DDS_CONFIG=HUSARNET_DISCOVERY_SERVER
-      - ROS_DISCOVERY_SERVER=ds # ds is a hostname of the device running Discovery Server
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+      - FASTRTPS_DEFAULT_PROFILES_FILE=/fastdds-ds.xml
+      - ROS_DISCOVERY_SERVER=ds:11811 # ds is a hostname of the device running Discovery Server and 11811 is a port we specifed in DISCOVERY_SERVER_PORT env
     command: ros2 run demo_nodes_cpp talker
 ```
 
@@ -105,7 +104,34 @@ services:
     network_mode: host
     ipc: host
     environment:
-      - DDS_CONFIG=HUSARNET_DISCOVERY_SERVER
-      - ROS_DISCOVERY_SERVER=ds # ds is a hostname of the device running Discovery Server
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+      - FASTRTPS_DEFAULT_PROFILES_FILE=/fastdds-ds.xml
+      - ROS_DISCOVERY_SERVER=ds:11811 # ds is a hostname of the device running Discovery Server and 11811 is a port we specifed in DISCOVERY_SERVER_PORT env
+    command: ros2 run demo_nodes_cpp listener
+```
+
+#### **Cyclone DDS** - simple discovery
+
+```yaml
+services:
+  chatter:
+    image: chatter:humble
+    network_mode: host
+    ipc: host
+    environment:
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+      - CYCLONEDDS_URI=file:///cyclonedds-simple.xml # place here a path to NON-EXISTING file - it will be created in entrypoint with a Husarnet config
+    command: ros2 run demo_nodes_cpp talker
+```
+
+```yaml
+services:
+  chatter:
+    image: chatter:humble
+    network_mode: host
+    ipc: host
+    environment:
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+      - CYCLONEDDS_URI=file:///cyclonedds-simple.xml # place here a path to NON-EXISTING file - it will be created in entrypoint with a Husarnet config
     command: ros2 run demo_nodes_cpp listener
 ```

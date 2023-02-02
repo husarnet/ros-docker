@@ -7,8 +7,8 @@ services:
     depends_on: 
       husarnet: { condition: service_healthy }
     environment:
-      - DDS_CONFIG=HUSARNET_DISCOVERY_SERVER
-    command: fast-discovery-server -x /dds-husarnet-ds.xml
+      - DISCOVERY_SERVER_PORT=11811
+    command: fast-discovery-server -x /var/tmp/husarnet-dds/fastdds-ds-server.xml
 
   chatter:
     build:
@@ -20,7 +20,9 @@ services:
     depends_on: 
       husarnet: { condition: service_healthy }
     environment:
-      - DDS_CONFIG
+      - RMW_IMPLEMENTATION
+      - FASTRTPS_DEFAULT_PROFILES_FILE
+      - CYCLONEDDS_URI
       - ROS_DISCOVERY_SERVER
     command: ros2 run demo_nodes_cpp ${CHATTER_ROLE}
 

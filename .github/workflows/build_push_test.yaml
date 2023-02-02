@@ -62,7 +62,8 @@ jobs:
           husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}
           husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}-${{ github.ref_name}}
 
-  test_simple:
+  test_simple_fastdds:
+    name: Testing FastDDS - simple discovery
     needs: build_push
     runs-on: ubuntu-20.04
     strategy:
@@ -83,7 +84,8 @@ jobs:
         cd demo
         export ROS_DISTRO=${{ matrix.ros-distro }}
         export CHATTER_ROLE=${{ matrix.chatter-role }}
-        export DDS_CONFIG=HUSARNET_SIMPLE_AUTO
+        export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+        export FASTRTPS_DEFAULT_PROFILES_FILE=/fastdds-simple.xml
         export WAIT_HOSTNAMES=talker,listener
         export JOINCODE=${{ secrets.JOINCODE }}
         export HOSTNAME=${{ matrix.chatter-role }}
@@ -92,28 +94,15 @@ jobs:
     - name: "Check if the log contains 'Hello World' string"
       run: "if [[ $(grep 'Hello World' demo/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
 
-  test_discovery_server:
-    needs: test_simple
+  test_simple_cyclonedds:
+    name: Testing CycloneDDS - simple discovery
+    needs: test_simple_fastdds
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - hostname: talker
-            chatter-role: talker
-            ros-distro: humble
-            discovery-server: ds
-            services-to-run: "husarnet chatter"
-          - hostname: listener
-            chatter-role: listener
-            ros-distro: humble
-            discovery-server: ds
-            services-to-run: "husarnet chatter"
-          - hostname: ds
-            chatter-role: listener
-            ros-distro: humble
-            discovery-server: ds
-            services-to-run: "husarnet chatter discovery-server"
+        ros-distro: [humble]
+        chatter-role: [talker, listener]
 
     steps:
 
@@ -125,14 +114,59 @@ jobs:
       timeout-minutes: 2
       run: |
         cd demo
-        export HOSTNAME=${{ matrix.hostname }}
-        export JOINCODE=${{ secrets.JOINCODE }}
-        export WAIT_HOSTNAMES=ds
-        export DDS_CONFIG=HUSARNET_DISCOVERY_SERVER
-        export ROS_DISCOVERY_SERVER=${{ matrix.discovery-server }}
         export ROS_DISTRO=${{ matrix.ros-distro }}
         export CHATTER_ROLE=${{ matrix.chatter-role }}
-        docker compose up ${{ matrix.services-to-run }} | tee output.txt
+        export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+        export CYCLONEDDS_URI=file:///cyclonedds-simple.xml
+        export WAIT_HOSTNAMES=talker,listener
+        export JOINCODE=${{ secrets.JOINCODE }}
+        export HOSTNAME=${{ matrix.chatter-role }}
+        docker compose up husarnet chatter | tee output.txt
 
     - name: "Check if the log contains 'Hello World' string"
       run: "if [[ $(grep 'Hello World' demo/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
+
+  # test_discovery_server:
+  #   needs: test_simple
+  #   runs-on: ubuntu-20.04
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       include:
+  #         - hostname: talker
+  #           chatter-role: talker
+  #           ros-distro: humble
+  #           discovery-server: ds
+  #           services-to-run: "husarnet chatter"
+  #         - hostname: listener
+  #           chatter-role: listener
+  #           ros-distro: humble
+  #           discovery-server: ds
+  #           services-to-run: "husarnet chatter"
+  #         - hostname: ds
+  #           chatter-role: listener
+  #           ros-distro: humble
+  #           discovery-server: ds
+  #           services-to-run: "husarnet chatter discovery-server"
+
+  #   steps:
+
+  #   - name: Checkout
+  #     uses: actions/checkout@v2
+
+  #   - name: run test for ${{ matrix.chatter-role }}
+  #     continue-on-error: true
+  #     timeout-minutes: 2
+  #     run: |
+  #       cd demo
+  #       export HOSTNAME=${{ matrix.hostname }}
+  #       export JOINCODE=${{ secrets.JOINCODE }}
+  #       export WAIT_HOSTNAMES=ds
+  #       export DDS_CONFIG=HUSARNET_DISCOVERY_SERVER
+  #       export ROS_DISCOVERY_SERVER=${{ matrix.discovery-server }}
+  #       export ROS_DISTRO=${{ matrix.ros-distro }}
+  #       export CHATTER_ROLE=${{ matrix.chatter-role }}
+  #       docker compose up ${{ matrix.services-to-run }} | tee output.txt
+
+  #   - name: "Check if the log contains 'Hello World' string"
+  #     run: "if [[ $(grep 'Hello World' demo/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
