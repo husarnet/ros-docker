@@ -84,12 +84,12 @@ jobs:
         cd demo
         export RND=$RANDOM
         export ROS_DISTRO=${{ matrix.ros-distro }}
-        export CHATTER_ROLE=${{ matrix.chatter-role }}-$RND
+        export CHATTER_ROLE=${{ matrix.chatter-role }}
         export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
         export FASTRTPS_DEFAULT_PROFILES_FILE=/husarnet-fastdds-simple.xml
         export WAIT_HOSTNAMES=talker-$RND,listener-$RND
         export JOINCODE=${{ secrets.JOINCODE }}
-        export HOSTNAME=${{ matrix.chatter-role }}
+        export HOSTNAME=${{ matrix.chatter-role }}-$RND
         docker compose up husarnet chatter
 
     - name: tree
@@ -126,12 +126,12 @@ jobs:
         cd demo
         export RND=$RANDOM
         export ROS_DISTRO=${{ matrix.ros-distro }}
-        export CHATTER_ROLE=${{ matrix.chatter-role }}-$RND
+        export CHATTER_ROLE=${{ matrix.chatter-role }}
         export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
         export CYCLONEDDS_URI=file:///husarnet-cyclonedds-simple.xml
         export WAIT_HOSTNAMES=talker-$RND,listener-$RND
         export JOINCODE=${{ secrets.JOINCODE }}
-        export HOSTNAME=${{ matrix.chatter-role }}
+        export HOSTNAME=${{ matrix.chatter-role }}-$RND
         docker compose up husarnet chatter
 
     - name: tree
