@@ -82,11 +82,12 @@ jobs:
       timeout-minutes: 2
       run: |
         cd demo
+        export RND=$RANDOM
         export ROS_DISTRO=${{ matrix.ros-distro }}
-        export CHATTER_ROLE=${{ matrix.chatter-role }}
+        export CHATTER_ROLE=${{ matrix.chatter-role }}-$RND
         export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
         export FASTRTPS_DEFAULT_PROFILES_FILE=/husarnet-fastdds-simple.xml
-        export WAIT_HOSTNAMES=talker,listener
+        export WAIT_HOSTNAMES=talker-$RND,listener-$RND
         export JOINCODE=${{ secrets.JOINCODE }}
         export HOSTNAME=${{ matrix.chatter-role }}
         docker compose up husarnet chatter
@@ -123,11 +124,12 @@ jobs:
       timeout-minutes: 2
       run: |
         cd demo
+        export RND=$RANDOM
         export ROS_DISTRO=${{ matrix.ros-distro }}
-        export CHATTER_ROLE=${{ matrix.chatter-role }}
+        export CHATTER_ROLE=${{ matrix.chatter-role }}-$RND
         export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
         export CYCLONEDDS_URI=file:///husarnet-cyclonedds-simple.xml
-        export WAIT_HOSTNAMES=talker,listener
+        export WAIT_HOSTNAMES=talker-$RND,listener-$RND
         export JOINCODE=${{ secrets.JOINCODE }}
         export HOSTNAME=${{ matrix.chatter-role }}
         docker compose up husarnet chatter
