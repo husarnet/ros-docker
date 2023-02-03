@@ -112,7 +112,7 @@ jobs:
 
   test_simple_cyclonedds:
     name: Testing CycloneDDS - simple discovery
-    needs: test_simple_fastdds
+    needs: build_push
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
