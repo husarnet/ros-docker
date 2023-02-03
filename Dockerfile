@@ -6,6 +6,8 @@ FROM ubuntu:20.04 AS husarnet-dds-getter
 ARG TARGETARCH
 ARG HUSARNET_DDS_RELEASE="v1.1.0"
 
+ENV HUSARNET_DDS_VERBOSE=FALSE
+
 RUN apt update && apt install -y \
         curl
 
