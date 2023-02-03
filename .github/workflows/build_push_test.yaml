@@ -14,8 +14,15 @@ jobs:
       matrix:
         ros-distro: [humble, galactic, foxy]
         tag: [core, base]
-
+    outputs:
+      random1: ${{ steps.random1.outputs.random }}
+      random2: ${{ steps.random2.outputs.random }}
     steps:
+
+    - id: random1
+      run: echo "random=$RANDOM" >> $GITHUB_OUTPUT
+    - id: random2
+      run: echo "random=$RANDOM" >> $GITHUB_OUTPUT
 
     - name: Print event name and ref name
       run: echo "Event name - ${{ github.event_name }}, ref name - ${{ github.ref_name}}"
@@ -82,14 +89,13 @@ jobs:
       timeout-minutes: 2
       run: |
         cd demo
-        export RND=$RANDOM
         export ROS_DISTRO=${{ matrix.ros-distro }}
         export CHATTER_ROLE=${{ matrix.chatter-role }}
         export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
         export FASTRTPS_DEFAULT_PROFILES_FILE=/husarnet-fastdds-simple.xml
-        export WAIT_HOSTNAMES=talker-$RND,listener-$RND
+        export WAIT_HOSTNAMES=talker-${{needs.build_push.outputs.random1}},listener-${{needs.build_push.outputs.random1}}
         export JOINCODE=${{ secrets.JOINCODE }}
-        export HOSTNAME=${{ matrix.chatter-role }}-$RND
+        export HOSTNAME=${{ matrix.chatter-role }}-${{needs.build_push.outputs.random1}}
         docker compose up husarnet chatter
 
     - name: tree
@@ -124,14 +130,13 @@ jobs:
       timeout-minutes: 2
       run: |
         cd demo
-        export RND=$RANDOM
         export ROS_DISTRO=${{ matrix.ros-distro }}
         export CHATTER_ROLE=${{ matrix.chatter-role }}
         export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
         export CYCLONEDDS_URI=file:///husarnet-cyclonedds-simple.xml
-        export WAIT_HOSTNAMES=talker-$RND,listener-$RND
+        export WAIT_HOSTNAMES=talker-${{needs.build_push.outputs.random2}},listener-${{needs.build_push.outputs.random2}}
         export JOINCODE=${{ secrets.JOINCODE }}
-        export HOSTNAME=${{ matrix.chatter-role }}-$RND
+        export HOSTNAME=${{ matrix.chatter-role }}-${{needs.build_push.outputs.random2}}
         docker compose up husarnet chatter
 
     - name: tree
