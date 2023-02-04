@@ -150,10 +150,10 @@ jobs:
           export CHATTER_ROLE=${{ matrix.chatter-role }}
           export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
           export FASTRTPS_DEFAULT_PROFILES_FILE=${{ matrix.dds-xml }}
-          export WAIT_HOSTNAMES=ds
+          export WAIT_HOSTNAMES=ds-${{needs.build_push.outputs.random3}}
           export ROS_DISCOVERY_SERVER=ds:11811
           export JOINCODE=${{ secrets.JOINCODE }}
-          export HOSTNAME=${{ matrix.hostname }}-${{needs.build_push.outputs.random1}}
+          export HOSTNAME=${{ matrix.hostname }}-${{needs.build_push.outputs.random3}}
           docker compose up ${{ matrix.services }}
 
       - name: tree
