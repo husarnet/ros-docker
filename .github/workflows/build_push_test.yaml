@@ -17,60 +17,65 @@ jobs:
     outputs:
       random1: ${{ steps.random1.outputs.random }}
       random2: ${{ steps.random2.outputs.random }}
+      random3: ${{ steps.random3.outputs.random }}
+
     steps:
+      - id: random1
+        run: echo "random=$RANDOM" >> $GITHUB_OUTPUT
+      - id: random2
+        run: echo "random=$RANDOM" >> $GITHUB_OUTPUT
+      - id: random3
+        run: echo "random=$RANDOM" >> $GITHUB_OUTPUT
 
-    - id: random1
-      run: echo "random=$RANDOM" >> $GITHUB_OUTPUT
-    - id: random2
-      run: echo "random=$RANDOM" >> $GITHUB_OUTPUT
+      - name: Print event name and ref name
+        run: echo "Event name - ${{ github.event_name }}, ref name - ${{ github.ref_name}}"
 
-    - name: Print event name and ref name
-      run: echo "Event name - ${{ github.event_name }}, ref name - ${{ github.ref_name}}"
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
 
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          version: latest
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-      with:
-        version: latest
+      - name: Login to Docker Registry
+        uses: docker/login-action@v1
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Login to Docker Registry
-      uses: docker/login-action@v1
-      with:
-        registry: docker.io
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push (latest only)
+        if: github.ref_name == 'main' && github.event_name != 'release'
+        uses: docker/build-push-action@v2
+        with:
+          platforms: "linux/amd64, linux/arm64"
+          push: true
+          build-args: |
+            ROS_DISTRO=${{ matrix.ros-distro }}
+            TAG=${{ matrix.tag }}
+          tags: husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}
 
-    - name: Build and push (latest only)
-      if: github.ref_name == 'main' && github.event_name != 'release'
-      uses: docker/build-push-action@v2
-      with:
-        platforms: "linux/amd64, linux/arm64"
-        push: true
-        build-args: |
-          ROS_DISTRO=${{ matrix.ros-distro }}
-          TAG=${{ matrix.tag }}
-        tags: husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}
+      - name: Build and push (release)
+        if: github.event_name == 'release'
+        uses: docker/build-push-action@v2
+        with:
+          platforms: "linux/amd64, linux/arm64"
+          push: true
+          build-args: |
+            ROS_DISTRO=${{ matrix.ros-distro }}
+            TAG=${{ matrix.tag }}
+          tags: |
+            husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}
+            husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}-${{ github.ref_name}}
 
-    - name: Build and push (release)
-      if: github.event_name == 'release'
-      uses: docker/build-push-action@v2
-      with:
-        platforms: "linux/amd64, linux/arm64"
-        push: true
-        build-args: |
-          ROS_DISTRO=${{ matrix.ros-distro }}
-          TAG=${{ matrix.tag }}
-        tags: |
-          husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}
-          husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}-${{ github.ref_name}}
+  # Fast DDS simple
 
-  test_simple_fastdds:
-    name: Testing FastDDS - simple discovery
+  test_fastdds_simple:
+    name: Test Fast DDS simple
     needs: build_push
     runs-on: ubuntu-20.04
     strategy:
@@ -80,38 +85,93 @@ jobs:
         chatter-role: [talker, listener]
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: run test for ${{ matrix.chatter-role }}
+        continue-on-error: true
+        timeout-minutes: 2
+        run: |
+          cd demo
+          export ROS_DISTRO=${{ matrix.ros-distro }}
+          export CHATTER_ROLE=${{ matrix.chatter-role }}
+          export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+          export FASTRTPS_DEFAULT_PROFILES_FILE=/husarnet-fastdds-simple.xml
+          export WAIT_HOSTNAMES=talker-${{needs.build_push.outputs.random1}},listener-${{needs.build_push.outputs.random1}}
+          export JOINCODE=${{ secrets.JOINCODE }}
+          export HOSTNAME=${{ matrix.chatter-role }}-${{needs.build_push.outputs.random1}}
+          docker compose up husarnet chatter
 
-    - name: run test for ${{ matrix.chatter-role }}
-      continue-on-error: true
-      timeout-minutes: 2
-      run: |
-        cd demo
-        export ROS_DISTRO=${{ matrix.ros-distro }}
-        export CHATTER_ROLE=${{ matrix.chatter-role }}
-        export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-        export FASTRTPS_DEFAULT_PROFILES_FILE=/husarnet-fastdds-simple.xml
-        export WAIT_HOSTNAMES=talker-${{needs.build_push.outputs.random1}},listener-${{needs.build_push.outputs.random1}}
-        export JOINCODE=${{ secrets.JOINCODE }}
-        export HOSTNAME=${{ matrix.chatter-role }}-${{needs.build_push.outputs.random1}}
-        docker compose up husarnet chatter
+      - name: tree
+        run: cd demo && docker compose logs chatter | tee output.txt
 
-    - name: tree
-      run: cd demo && docker compose logs chatter | tee output.txt 
+      - name: tree
+        run: tree
 
-    - name: tree
-      run: tree 
+      - name: show demo/output.txt content
+        run: cat demo/output.txt
 
-    - name: show demo/output.txt content
-      run: cat demo/output.txt
+      - name: "Check if the log contains 'Hello World' string"
+        run: "if [[ $(grep 'Hello World' demo/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
 
-    - name: "Check if the log contains 'Hello World' string"
-      run: "if [[ $(grep 'Hello World' demo/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
+  # Fast DDS discovery server
 
-  test_simple_cyclonedds:
-    name: Testing CycloneDDS - simple discovery
+  test_fastdds_ds:
+    name: Test Fast DDS Discovery Server
+    needs: build_push
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - chatter-role: talker
+            dds-xml: /husarnet-fastdds-ds.xml
+            hostname: talker
+            services: husarnet chatter
+          - chatter-role: listener
+            dds-xml: /husarnet-fastdds-ds.xml
+            hostname: listener
+            services: husarnet chatter
+          - chatter-role: ""
+            dds-xml: ""
+            hostname: ds
+            services: husarnet discovery-server
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: run test for ${{ matrix.chatter-role }}
+        continue-on-error: true
+        timeout-minutes: 2
+        run: |
+          cd demo
+          export ROS_DISTRO=humble
+          export CHATTER_ROLE=${{ matrix.chatter-role }}
+          export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+          export FASTRTPS_DEFAULT_PROFILES_FILE=${{ matrix.dds-xml }}
+          export WAIT_HOSTNAMES=ds
+          export ROS_DISCOVERY_SERVER=ds:11811
+          export JOINCODE=${{ secrets.JOINCODE }}
+          export HOSTNAME=${{ matrix.hostname }}-${{needs.build_push.outputs.random1}}
+          docker compose up ${{ matrix.services }}
+
+      - name: tree
+        run: cd demo && docker compose logs chatter | tee output.txt
+
+      - name: tree
+        run: tree
+
+      - name: show demo/output.txt content
+        run: cat demo/output.txt
+
+      - name: "Check if the log contains 'Hello World' string"
+        run: "if [[ $(grep 'Hello World' demo/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
+
+  # Cyclone DDS simple
+
+  test_cyclonedds_simple:
+    name: Test Cyclone DDS simple
     needs: build_push
     runs-on: ubuntu-20.04
     strategy:
@@ -121,35 +181,34 @@ jobs:
         chatter-role: [talker, listener]
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: run test for ${{ matrix.chatter-role }}
+        continue-on-error: true
+        timeout-minutes: 2
+        run: |
+          cd demo
+          export ROS_DISTRO=${{ matrix.ros-distro }}
+          export CHATTER_ROLE=${{ matrix.chatter-role }}
+          export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+          export CYCLONEDDS_URI=file:///husarnet-cyclonedds-simple.xml
+          export WAIT_HOSTNAMES=talker-${{needs.build_push.outputs.random2}},listener-${{needs.build_push.outputs.random2}}
+          export JOINCODE=${{ secrets.JOINCODE }}
+          export HOSTNAME=${{ matrix.chatter-role }}-${{needs.build_push.outputs.random2}}
+          docker compose up husarnet chatter
 
-    - name: run test for ${{ matrix.chatter-role }}
-      continue-on-error: true
-      timeout-minutes: 2
-      run: |
-        cd demo
-        export ROS_DISTRO=${{ matrix.ros-distro }}
-        export CHATTER_ROLE=${{ matrix.chatter-role }}
-        export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-        export CYCLONEDDS_URI=file:///husarnet-cyclonedds-simple.xml
-        export WAIT_HOSTNAMES=talker-${{needs.build_push.outputs.random2}},listener-${{needs.build_push.outputs.random2}}
-        export JOINCODE=${{ secrets.JOINCODE }}
-        export HOSTNAME=${{ matrix.chatter-role }}-${{needs.build_push.outputs.random2}}
-        docker compose up husarnet chatter
+      - name: tree
+        run: cd demo && docker compose logs chatter | tee output.txt
 
-    - name: tree
-      run: cd demo && docker compose logs chatter | tee output.txt 
+      - name: tree
+        run: tree
 
-    - name: tree
-      run: tree 
+      - name: show demo/output.txt content
+        run: cat demo/output.txt
 
-    - name: show demo/output.txt content
-      run: cat demo/output.txt
-
-    - name: "Check if the log contains 'Hello World' string"
-      run: "if [[ $(grep 'Hello World' demo/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
+      - name: "Check if the log contains 'Hello World' string"
+        run: "if [[ $(grep 'Hello World' demo/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
 
   # test_discovery_server:
   #   needs: test_simple
