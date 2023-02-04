@@ -69,7 +69,7 @@ jobs:
           cd demo
           export ROS_DISTRO=humble
           export CHATTER_ROLE=talker
-          docker compose up chatter husarnet
+          docker compose -f compose.no-husarnet.yaml up
 
       - name: tree
         run: cd demo && docker compose logs chatter | tee output.txt

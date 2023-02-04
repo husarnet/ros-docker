@@ -1,0 +1,7 @@
+services:
+  chatter:
+    build:
+      context: .
+      args:
+        - ROS_DISTRO=${ROS_DISTRO}
+    command: ros2 run demo_nodes_cpp ${CHATTER_ROLE}
