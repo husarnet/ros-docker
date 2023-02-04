@@ -100,6 +100,7 @@ jobs:
           export WAIT_HOSTNAMES=talker-${{needs.build_push.outputs.random1}},listener-${{needs.build_push.outputs.random1}}
           export JOINCODE=${{ secrets.JOINCODE }}
           export HOSTNAME=${{ matrix.chatter-role }}-${{needs.build_push.outputs.random1}}
+          export HUSARNET_DDS_DEBUG=TRUE
           docker compose up husarnet chatter
 
       - name: tree
@@ -132,16 +133,16 @@ jobs:
             dds-xml: /husarnet-fastdds-ds.xml
             hostname: listener
             services: husarnet chatter
-          - chatter-role: ""
-            dds-xml: ""
+          - chatter-role: "listener"
+            dds-xml: "/husarnet-fastdds-ds.xml"
             hostname: ds
-            services: husarnet discovery-server
+            services: husarnet chatter discovery-server
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: run test for ${{ matrix.chatter-role }}
+      - name: run test for ${{ matrix.hostname }}
         continue-on-error: true
         timeout-minutes: 2
         run: |
@@ -150,10 +151,11 @@ jobs:
           export CHATTER_ROLE=${{ matrix.chatter-role }}
           export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
           export FASTRTPS_DEFAULT_PROFILES_FILE=${{ matrix.dds-xml }}
-          export WAIT_HOSTNAMES=ds-${{needs.build_push.outputs.random3}}
+          export WAIT_HOSTNAMES=ds-${{needs.build_push.outputs.random2}}
           export ROS_DISCOVERY_SERVER=ds:11811
           export JOINCODE=${{ secrets.JOINCODE }}
-          export HOSTNAME=${{ matrix.hostname }}-${{needs.build_push.outputs.random3}}
+          export HOSTNAME=${{ matrix.hostname }}-${{needs.build_push.outputs.random2}}
+          export HUSARNET_DDS_DEBUG=TRUE
           docker compose up ${{ matrix.services }}
 
       - name: tree
@@ -193,9 +195,10 @@ jobs:
           export CHATTER_ROLE=${{ matrix.chatter-role }}
           export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
           export CYCLONEDDS_URI=file:///husarnet-cyclonedds-simple.xml
-          export WAIT_HOSTNAMES=talker-${{needs.build_push.outputs.random2}},listener-${{needs.build_push.outputs.random2}}
+          export WAIT_HOSTNAMES=talker-${{needs.build_push.outputs.random2}},listener-${{needs.build_push.outputs.random3}}
           export JOINCODE=${{ secrets.JOINCODE }}
-          export HOSTNAME=${{ matrix.chatter-role }}-${{needs.build_push.outputs.random2}}
+          export HOSTNAME=${{ matrix.chatter-role }}-${{needs.build_push.outputs.random3}}
+          export HUSARNET_DDS_DEBUG=TRUE
           docker compose up husarnet chatter
 
       - name: tree
