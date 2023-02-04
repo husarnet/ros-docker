@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-output=$(husarnet-dds singleshot 2>/dev/null)
-if [[ "$HUSARNET_DDS_VERBOSE" == "TRUE" ]]; then
+output=$(husarnet-dds singleshot) || true
+if [[ "$HUSARNET_DDS_DEBUG" == "TRUE" ]]; then
   echo "$output"
 fi
 
