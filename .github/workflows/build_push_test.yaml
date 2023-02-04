@@ -152,7 +152,7 @@ jobs:
           export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
           export FASTRTPS_DEFAULT_PROFILES_FILE=${{ matrix.dds-xml }}
           export WAIT_HOSTNAMES=ds-${{needs.build_push.outputs.random2}}
-          export ROS_DISCOVERY_SERVER=ds:11811
+          export ROS_DISCOVERY_SERVER=ds-${{needs.build_push.outputs.random2}}:11811
           export JOINCODE=${{ secrets.JOINCODE }}
           export HOSTNAME=${{ matrix.hostname }}-${{needs.build_push.outputs.random2}}
           export HUSARNET_DDS_DEBUG=TRUE
