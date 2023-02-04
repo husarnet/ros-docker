@@ -1,6 +1,6 @@
 ARG ROS_DISTRO
 
-FROM husarnet/ros:$ROS_DISTRO-ros-core
+FROM husarnet/ros:humble-ros-core-testing
 
 # install ros package
 RUN apt-get update && apt-get install -y \
