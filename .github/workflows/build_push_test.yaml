@@ -51,6 +51,38 @@ jobs:
             TAG=core
           tags: husarnet/ros:humble-ros-core-testing
 
+  # Without Husarnet
+
+  test_no_husarnet:
+    name: Test no-Husarnet setup
+    needs: build_push_testing
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: run test for ${{ matrix.hostname }}
+        continue-on-error: true
+        timeout-minutes: 2
+        run: |
+          cd demo
+          export ROS_DISTRO=humble
+          export CHATTER_ROLE=talker
+          docker compose up chatter husarnet
+
+      - name: tree
+        run: cd demo && docker compose logs chatter | tee output.txt
+
+      - name: tree
+        run: tree
+
+      - name: show demo/output.txt content
+        run: cat demo/output.txt
+
+      - name: "Check if the log contains 'Hello World' string"
+        run: "if [[ $(grep 'Hello World' demo/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
+
   # Fast DDS simple
 
   test_fastdds_simple:
@@ -192,9 +224,12 @@ jobs:
       - name: "Check if the log contains 'Hello World' string"
         run: "if [[ $(grep 'Hello World' demo/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
 
+  # Push on Docker Hub if tests were finished positively
+
   build_push_production:
     runs-on: ubuntu-20.04
-    needs: 
+    needs:
+      - test_no_husarnet
       - test_fastdds_simple
       - test_fastdds_ds
       - test_cyclonedds_simple
@@ -205,7 +240,6 @@ jobs:
         tag: [core, base]
 
     steps:
-
       - name: Print event name and ref name
         run: echo "Event name - ${{ github.event_name }}, ref name - ${{ github.ref_name}}"
 
