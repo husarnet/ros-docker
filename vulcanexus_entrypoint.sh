@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+output=$(husarnet-dds singleshot) || true
+if [[ "$HUSARNET_DDS_DEBUG" == "TRUE" ]]; then
+  echo "$output"
+fi
+
+# setup ros environment
+source "/opt/vulcanexus/$ROS_DISTRO/setup.bash"
+test -f "/ros2_ws/install/setup.bash" && source "/ros2_ws/install/setup.bash"
+
+exec "$@"

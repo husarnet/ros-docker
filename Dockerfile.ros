@@ -29,6 +29,8 @@ RUN chmod +x /usr/bin/husarnet-dds
 
 COPY . /
 
+RUN rm -rf /vulcanexus_entrypoint.sh
+
 WORKDIR /ros2_ws
 
 RUN echo ". /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc

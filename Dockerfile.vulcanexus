@@ -28,8 +28,10 @@ RUN chmod +x /usr/bin/husarnet-dds
 
 COPY . /
 
+RUN rm -rf /ros_entrypoint.sh
+
 WORKDIR /ros2_ws
 
 ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 
-RUN echo ". /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc
+RUN echo ". /opt/vulcanexus/$ROS_DISTRO/setup.bash" >> ~/.bashrc
