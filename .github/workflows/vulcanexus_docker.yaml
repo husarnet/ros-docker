@@ -1,4 +1,4 @@
-name: Build/Publish Docker Image and Run Tests
+name: Vulcanexus - Build/Publish Docker Image and Run Tests
 
 on:
   push:
@@ -12,14 +12,11 @@ jobs:
     outputs:
       random1: ${{ steps.random1.outputs.random }}
       random2: ${{ steps.random2.outputs.random }}
-      random3: ${{ steps.random3.outputs.random }}
 
     steps:
       - id: random1
         run: echo "random=$RANDOM" >> $GITHUB_OUTPUT
       - id: random2
-        run: echo "random=$RANDOM" >> $GITHUB_OUTPUT
-      - id: random3
         run: echo "random=$RANDOM" >> $GITHUB_OUTPUT
 
       - name: Checkout
@@ -48,8 +45,8 @@ jobs:
           push: true
           build-args: |
             ROS_DISTRO=humble
-            TAG=core
-          tags: husarnet/ros:humble-ros-core-testing
+            TAG=base
+          tags: husarnet/ros:vulcanexus-humble-base-testing
 
   # Without Husarnet
 
@@ -66,22 +63,22 @@ jobs:
         continue-on-error: true
         timeout-minutes: 2
         run: |
-          cd demo
+          cd demo-vulcanexus
           export ROS_DISTRO=humble
           export CHATTER_ROLE=talker
           docker compose -f compose.no-husarnet.yaml up
 
       - name: tree
-        run: cd demo && docker compose logs chatter | tee output.txt
+        run: cd demo-vulcanexus && docker compose logs chatter | tee output.txt
 
       - name: tree
         run: tree
 
-      - name: show demo/output.txt content
-        run: cat demo/output.txt
+      - name: show demo-vulcanexus/output.txt content
+        run: cat demo-vulcanexus/output.txt
 
       - name: "Check if the log contains 'Hello World' string"
-        run: "if [[ $(grep 'Hello World' demo/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
+        run: "if [[ $(grep 'Hello World' demo-vulcanexus/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
 
   # Fast DDS simple
 
@@ -103,7 +100,7 @@ jobs:
         continue-on-error: true
         timeout-minutes: 2
         run: |
-          cd demo
+          cd demo-vulcanexus
           export ROS_DISTRO=${{ matrix.ros-distro }}
           export CHATTER_ROLE=${{ matrix.chatter-role }}
           export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
@@ -115,16 +112,16 @@ jobs:
           docker compose up husarnet chatter
 
       - name: tree
-        run: cd demo && docker compose logs chatter | tee output.txt
+        run: cd demo-vulcanexus && docker compose logs chatter | tee output.txt
 
       - name: tree
         run: tree
 
-      - name: show demo/output.txt content
-        run: cat demo/output.txt
+      - name: show demo-vulcanexus/output.txt content
+        run: cat demo-vulcanexus/output.txt
 
       - name: "Check if the log contains 'Hello World' string"
-        run: "if [[ $(grep 'Hello World' demo/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
+        run: "if [[ $(grep 'Hello World' demo-vulcanexus/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
 
   # Fast DDS discovery server
 
@@ -157,7 +154,7 @@ jobs:
         continue-on-error: true
         timeout-minutes: 2
         run: |
-          cd demo
+          cd demo-vulcanexus
           export ROS_DISTRO=humble
           export CHATTER_ROLE=${{ matrix.chatter-role }}
           export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
@@ -170,59 +167,16 @@ jobs:
           docker compose up ${{ matrix.services }}
 
       - name: tree
-        run: cd demo && docker compose logs chatter | tee output.txt
+        run: cd demo-vulcanexus && docker compose logs chatter | tee output.txt
 
       - name: tree
         run: tree
 
-      - name: show demo/output.txt content
-        run: cat demo/output.txt
+      - name: show demo-vulcanexus/output.txt content
+        run: cat demo-vulcanexus/output.txt
 
       - name: "Check if the log contains 'Hello World' string"
-        run: "if [[ $(grep 'Hello World' demo/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
-
-  # Cyclone DDS simple
-
-  test_cyclonedds_simple:
-    name: Test Cyclone DDS simple
-    needs: build_push_testing
-    runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: false
-      matrix:
-        ros-distro: [humble]
-        chatter-role: [talker, listener]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: run test for ${{ matrix.chatter-role }}
-        continue-on-error: true
-        timeout-minutes: 2
-        run: |
-          cd demo
-          export ROS_DISTRO=${{ matrix.ros-distro }}
-          export CHATTER_ROLE=${{ matrix.chatter-role }}
-          export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-          export CYCLONEDDS_URI=file:///husarnet-cyclonedds-simple.xml
-          export WAIT_HOSTNAMES=talker-${{needs.build_push_testing.outputs.random2}},listener-${{needs.build_push_testing.outputs.random3}}
-          export JOINCODE=${{ secrets.JOINCODE }}
-          export HOSTNAME=${{ matrix.chatter-role }}-${{needs.build_push_testing.outputs.random3}}
-          export HUSARNET_DDS_DEBUG=TRUE
-          docker compose up husarnet chatter
-
-      - name: tree
-        run: cd demo && docker compose logs chatter | tee output.txt
-
-      - name: tree
-        run: tree
-
-      - name: show demo/output.txt content
-        run: cat demo/output.txt
-
-      - name: "Check if the log contains 'Hello World' string"
-        run: "if [[ $(grep 'Hello World' demo/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
+        run: "if [[ $(grep 'Hello World' demo-vulcanexus/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
 
   # Push on Docker Hub if tests were finished positively
 
@@ -232,12 +186,11 @@ jobs:
       - test_no_husarnet
       - test_fastdds_simple
       - test_fastdds_ds
-      - test_cyclonedds_simple
     strategy:
       fail-fast: false
       matrix:
-        ros-distro: [humble, galactic, foxy]
-        tag: [core, base]
+        ros-distro: [humble]
+        tag: [base]
 
     steps:
       - name: Print event name and ref name
@@ -270,7 +223,7 @@ jobs:
           build-args: |
             ROS_DISTRO=${{ matrix.ros-distro }}
             TAG=${{ matrix.tag }}
-          tags: husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}
+          tags: husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-${{ matrix.tag }}
 
       - name: Build and push (release)
         if: github.event_name == 'release'
@@ -282,5 +235,5 @@ jobs:
             ROS_DISTRO=${{ matrix.ros-distro }}
             TAG=${{ matrix.tag }}
           tags: |
-            husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}
-            husarnet/ros:${{ matrix.ros-distro }}-ros-${{ matrix.tag }}-${{ github.ref_name}}
+            husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-${{ matrix.tag }}
+            husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-${{ matrix.tag }}-${{ github.ref_name}}

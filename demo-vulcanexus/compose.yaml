@@ -1,7 +1,7 @@
 services:
 
   discovery-server:
-    image: husarnet/ros:humble-ros-core
+    image: husarnet/ros:vulcanexus-humble-base-testing
     network_mode: service:husarnet
     ipc: service:husarnet
     depends_on: 
