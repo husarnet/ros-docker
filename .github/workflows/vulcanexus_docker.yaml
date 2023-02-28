@@ -226,7 +226,9 @@ jobs:
             ROS_DISTRO=${{ matrix.ros-distro }}
             TAG=${{ matrix.tag }}
           # tags: husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-${{ matrix.tag }}
-          tags: husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-ros-core
+          tags: |
+            husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-ros-core
+            husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-ros-base
 
       - name: Build and push (release)
         if: github.event_name == 'release'
@@ -240,6 +242,7 @@ jobs:
             TAG=${{ matrix.tag }}
           tags: |
             husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-ros-core
+            husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-ros-base
             husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-ros-core-${{ github.ref_name}}
           # tags: |
           #   husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-${{ matrix.tag }}
