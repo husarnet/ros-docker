@@ -42,7 +42,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           platforms: "linux/amd64"
-          dockerfile: Dockerfile.vulcanexus
+          file: Dockerfile.vulcanexus
           push: true
           build-args: |
             ROS_DISTRO=humble
@@ -220,7 +220,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           platforms: "linux/amd64, linux/arm64"
-          dockerfile: Dockerfile.vulcanexus
+          file: Dockerfile.vulcanexus
           push: true
           build-args: |
             ROS_DISTRO=${{ matrix.ros-distro }}
@@ -232,7 +232,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           platforms: "linux/amd64, linux/arm64"
-          dockerfile: Dockerfile.vulcanexus
+          file: Dockerfile.vulcanexus
           push: true
           build-args: |
             ROS_DISTRO=${{ matrix.ros-distro }}
