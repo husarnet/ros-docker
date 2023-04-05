@@ -25,9 +25,7 @@ RUN apt-get update && \
 COPY --from=husarnet-dds-getter /usr/bin/husarnet-dds /usr/bin/husarnet-dds
 RUN chmod +x /usr/bin/husarnet-dds
 
-COPY . /
-
-RUN rm -rf /ros_entrypoint.sh
+COPY vulcanexus_entrypoint.sh /
 
 WORKDIR /ros2_ws
 
