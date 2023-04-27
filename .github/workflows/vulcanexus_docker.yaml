@@ -46,7 +46,7 @@ jobs:
           push: true
           build-args: |
             ROS_DISTRO=humble
-            TAG=base
+            TAG=core
           tags: husarnet/ros:vulcanexus-humble-ros-core-testing
 
   # Without Husarnet
@@ -191,7 +191,7 @@ jobs:
       fail-fast: false
       matrix:
         ros-distro: [humble]
-        tag: [base]
+        tag: [core, base]
 
     steps:
       - name: Print event name and ref name
@@ -225,10 +225,7 @@ jobs:
           build-args: |
             ROS_DISTRO=${{ matrix.ros-distro }}
             TAG=${{ matrix.tag }}
-          # tags: husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-${{ matrix.tag }}
-          tags: |
-            husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-ros-core
-            husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-ros-base
+          tags: husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-${{ matrix.tag }}
 
       - name: Build and push (release)
         if: github.event_name == 'release'
@@ -241,9 +238,5 @@ jobs:
             ROS_DISTRO=${{ matrix.ros-distro }}
             TAG=${{ matrix.tag }}
           tags: |
-            husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-ros-core
-            husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-ros-base
-            husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-ros-core-${{ github.ref_name}}
-          # tags: |
-          #   husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-${{ matrix.tag }}
-          #   husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-${{ matrix.tag }}-${{ github.ref_name}}
+            husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-${{ matrix.tag }}
+            husarnet/ros:vulcanexus-${{ matrix.ros-distro }}-${{ matrix.tag }}-${{ github.ref_name}}
