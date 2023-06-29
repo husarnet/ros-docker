@@ -48,9 +48,9 @@ jobs:
           file: Dockerfile.ros
           push: true
           build-args: |
-            ROS_DISTRO=humble
+            ROS_DISTRO=iron
             TAG=core
-          tags: husarnet/ros:humble-ros-core-testing
+          tags: husarnet/ros:iron-ros-core-testing
 
   # Without Husarnet
 
@@ -68,7 +68,7 @@ jobs:
         timeout-minutes: 2
         run: |
           cd demo-ros
-          export ROS_DISTRO=humble
+          export ROS_DISTRO=iron
           export CHATTER_ROLE=talker
           docker compose -f compose.no-husarnet.yaml up
 
@@ -93,7 +93,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros-distro: [humble]
+        ros-distro: [iron]
         chatter-role: [talker, listener]
 
     steps:
@@ -159,7 +159,7 @@ jobs:
         timeout-minutes: 2
         run: |
           cd demo-ros
-          export ROS_DISTRO=humble
+          export ROS_DISTRO=iron
           export CHATTER_ROLE=${{ matrix.chatter-role }}
           export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
           export FASTRTPS_DEFAULT_PROFILES_FILE=${{ matrix.dds-xml }}
@@ -191,7 +191,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros-distro: [humble]
+        ros-distro: [iron]
         chatter-role: [talker, listener]
 
     steps:
