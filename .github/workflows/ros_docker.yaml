@@ -1,7 +1,6 @@
 name: ROS - Build/Publish Docker Image and Run Tests
 
 on:
-  push:
   workflow_dispatch:
   release:
     types: [published]
