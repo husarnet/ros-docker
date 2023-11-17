@@ -189,7 +189,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros-distro: [humble]
+        ros-distro: [humble, iron]
         tag: [core, base]
 
     steps:
