@@ -29,6 +29,8 @@ RUN chmod +x /usr/bin/husarnet-dds
 
 COPY ros_entrypoint.sh /
 
+COPY shm-only.xml /
+
 WORKDIR /ros2_ws
 
 ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
