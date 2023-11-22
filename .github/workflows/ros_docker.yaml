@@ -236,7 +236,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros-distro: [iron, humble, galactic, foxy]
+        ros-distro: [iron, humble]
         tag: [core, base]
 
     steps:
