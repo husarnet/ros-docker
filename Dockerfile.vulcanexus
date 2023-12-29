@@ -33,5 +33,6 @@ COPY shm-only.xml /
 WORKDIR /ros2_ws
 
 ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+ENV USER=root
 
 RUN echo ". /opt/vulcanexus/$ROS_DISTRO/setup.bash" >> ~/.bashrc
