@@ -18,6 +18,7 @@ FROM ros:$ROS_DISTRO-ros-$TAG
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update && apt-get install -y \
+        gosu \
         ros-$ROS_DISTRO-rmw-fastrtps-cpp \
         ros-$ROS_DISTRO-rmw-cyclonedds-cpp && \
     apt-get upgrade -y && \
@@ -34,5 +35,6 @@ COPY shm-only.xml /
 WORKDIR /ros2_ws
 
 ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+ENV USER=root
 
-RUN echo ". /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc
+RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc
