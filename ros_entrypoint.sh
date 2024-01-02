@@ -16,4 +16,10 @@ elif ! id "$USER" &>/dev/null; then
     useradd -ms /bin/bash "$USER"
 fi
 
-exec gosu $USER "$@"
+# <additional-user-commands>
+
+if [ $# -eq 0 ]; then
+    exec gosu $USER /bin/bash
+else
+    exec gosu $USER "$@"
+fi
