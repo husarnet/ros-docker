@@ -1,6 +1,6 @@
 ARG ROS_DISTRO=humble
 
-FROM husarnet/ros:vulcanexus-humble-ros-core-testing
+FROM husarnet/ros:vulcanexus-$ROS_DISTRO-ros-core-testing
 
 ARG ROS_DISTRO
 
