@@ -16,6 +16,7 @@ if [ ! -z "$USER" ] && [ "$USER" != "root" ]; then
     # Check if the user already exists; if not, create the user
     if ! id "$USER" &>/dev/null; then
         useradd -ms /bin/bash "$USER"
+        echo "su $USER" >> /etc/bash.bashrc
     fi
 
     if [ $# -eq 0 ]; then
