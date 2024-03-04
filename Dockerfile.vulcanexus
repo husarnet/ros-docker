@@ -13,7 +13,8 @@ RUN apt update && apt install -y \
 
 RUN curl -L https://github.com/husarnet/husarnet-dds/releases/download/${HUSARNET_DDS_RELEASE}/husarnet-dds-linux-${TARGETARCH} -o /usr/bin/husarnet-dds
 
-FROM eprosima/vulcanexus:$ROS_DISTRO-$TAG
+## =========================== Final Stage ===============================
+FROM eprosima/vulcanexus:$ROS_DISTRO-$TAG AS final
 
 SHELL ["/bin/bash", "-c"]
 
@@ -35,4 +36,9 @@ WORKDIR /ros2_ws
 ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 ENV USER=root
 
-RUN echo ". /opt/vulcanexus/$ROS_DISTRO/setup.bash" >> ~/.bashrc
+RUN echo "source /opt/vulcanexus/$ROS_DISTRO/setup.bash" >> /etc/bash.bashrc
+
+## =========================== Optimizing size ===============================
+FROM scratch
+
+COPY --from=final / /
