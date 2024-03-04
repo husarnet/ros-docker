@@ -43,4 +43,6 @@ RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> /etc/bash.bashrc
 ## =========================== Optimizing size ===============================
 FROM scratch
 
+SHELL ["/bin/bash", "-c"]
+
 COPY --from=final / /
