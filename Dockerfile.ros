@@ -43,10 +43,17 @@ RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> /etc/bash.bashrc
 ## =========================== Optimizing size ===============================
 FROM scratch
 
+ARG ROS_DISTRO
+
 COPY --from=final / /
 
-SHELL ["/bin/bash", "-c"]
-WORKDIR /ros2_ws
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV ROS_DISTRO=$ROS_DISTRO
 
 ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 ENV USER=root
+
+ENTRYPOINT [ "/ros_entrypoint.sh" ]
+CMD [ "bash" ]
+SHELL ["/bin/bash", "-c"]
