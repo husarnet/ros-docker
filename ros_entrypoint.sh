@@ -12,11 +12,11 @@ test -f "/ros2_ws/install/setup.bash" && source "/ros2_ws/install/setup.bash"
 
 # <additional-user-commands>
 
-if [ ! -z "$USER" ] && [ "$USER" != "root" ]; then
+if [ ! -z "$USER" ] && [ "$USER" != "root" ] && [ "$USER" != "$(whoami)" ]; then
     # Check if the user already exists; if not, create the user
     if ! id "$USER" &>/dev/null; then
         useradd -ms /bin/bash "$USER"
-        echo "[ \"$(whoami)\" != \"$USER\" ] && su - $USER" >> /etc/bash.bashrc
+        echo "[ \"\$(whoami)\" != \"$USER\" ] && su - \"$USER\"" >> /etc/bash.bashrc
     fi
 
     if [ $# -eq 0 ]; then
