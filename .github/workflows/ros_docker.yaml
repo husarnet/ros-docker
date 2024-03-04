@@ -51,6 +51,9 @@ jobs:
             TAG=core
           tags: husarnet/ros:iron-ros-core-testing
 
+      - name: sleep
+        run: sleep 2
+
   # Without Husarnet
 
   test_no_husarnet:

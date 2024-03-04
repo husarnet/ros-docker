@@ -48,6 +48,9 @@ jobs:
             TAG=core
           tags: husarnet/ros:vulcanexus-humble-ros-core-testing
 
+      - name: sleep
+        run: sleep 2
+
   # Without Husarnet
 
   test_no_husarnet:
