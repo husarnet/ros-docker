@@ -8,10 +8,7 @@ fi
 
 # setup ros environment
 source "/opt/ros/$ROS_DISTRO/setup.bash"
-if [[ -f "/ros2_ws/install/setup.bash" ]]; then
-    source "/ros2_ws/install/setup.bash"
-    echo "source /ros2_ws/install/setup.bash" >> /etc/bash.bashrc
-fi
+test -f "/ros2_ws/install/setup.bash" && source "/ros2_ws/install/setup.bash"
 
 if [ -z "$USER" ]; then
     export USER=root
