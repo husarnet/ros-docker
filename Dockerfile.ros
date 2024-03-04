@@ -37,4 +37,6 @@ WORKDIR /ros2_ws
 ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 ENV USER=root
 
-RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc
+RUN test -f "/ros2_ws/install/setup.bash" && echo "source /ros2_ws/install/setup.bash" >> /etc/bash.bashrc
+# Check if the workspace exists if so source it.
+RUN echo "test -f \"/opt/ros/$ROS_DISTRO/setup.bash\" && source /opt/ros/$ROS_DISTRO/setup.bash" >> /etc/bash.bashrc
