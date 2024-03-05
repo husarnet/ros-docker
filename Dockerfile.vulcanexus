@@ -20,8 +20,7 @@ FROM eprosima/vulcanexus:$ROS_DISTRO-$TAG AS final
 SHELL ["/bin/bash", "-c"]
 
 COPY --from=husarnet-dds-getter /usr/bin/husarnet-dds /usr/bin/husarnet-dds
-COPY vulcanexus_entrypoint.sh /
-COPY shm-only.xml /
+COPY vulcanexus_entrypoint.sh shm-only.xml /
 
 RUN apt-get update && apt-get install -y \
         gosu && \
