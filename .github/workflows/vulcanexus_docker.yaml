@@ -66,22 +66,22 @@ jobs:
         continue-on-error: true
         timeout-minutes: 2
         run: |
-          cd demo-vulcanexus
+          cd workflow-test-vulcanexus
           export ROS_DISTRO=humble
           export CHATTER_ROLE=talker
           docker compose -f compose.no-husarnet.yaml up
 
       - name: tree
-        run: cd demo-vulcanexus && docker compose logs chatter | tee output.txt
+        run: cd workflow-test-vulcanexus && docker compose logs chatter | tee output.txt
 
       - name: tree
         run: tree
 
-      - name: show demo-vulcanexus/output.txt content
-        run: cat demo-vulcanexus/output.txt
+      - name: show workflow-test-vulcanexus/output.txt content
+        run: cat workflow-test-vulcanexus/output.txt
 
       - name: "Check if the log contains 'Hello World' string"
-        run: "if [[ $(grep 'Hello World' demo-vulcanexus/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
+        run: "if [[ $(grep 'Hello World' workflow-test-vulcanexus/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
 
   # Fast DDS simple
 
@@ -103,7 +103,7 @@ jobs:
         continue-on-error: true
         timeout-minutes: 2
         run: |
-          cd demo-vulcanexus
+          cd workflow-test-vulcanexus
           export ROS_DISTRO=${{ matrix.ros-distro }}
           export CHATTER_ROLE=${{ matrix.chatter-role }}
           export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
@@ -115,16 +115,16 @@ jobs:
           docker compose up husarnet chatter
 
       - name: tree
-        run: cd demo-vulcanexus && docker compose logs chatter | tee output.txt
+        run: cd workflow-test-vulcanexus && docker compose logs chatter | tee output.txt
 
       - name: tree
         run: tree
 
-      - name: show demo-vulcanexus/output.txt content
-        run: cat demo-vulcanexus/output.txt
+      - name: show workflow-test-vulcanexus/output.txt content
+        run: cat workflow-test-vulcanexus/output.txt
 
       - name: "Check if the log contains 'Hello World' string"
-        run: "if [[ $(grep 'Hello World' demo-vulcanexus/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
+        run: "if [[ $(grep 'Hello World' workflow-test-vulcanexus/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
 
   # Fast DDS discovery server
 
@@ -157,7 +157,7 @@ jobs:
         continue-on-error: true
         timeout-minutes: 2
         run: |
-          cd demo-vulcanexus
+          cd workflow-test-vulcanexus
           export ROS_DISTRO=humble
           export CHATTER_ROLE=${{ matrix.chatter-role }}
           export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
@@ -170,16 +170,16 @@ jobs:
           docker compose up ${{ matrix.services }}
 
       - name: tree
-        run: cd demo-vulcanexus && docker compose logs chatter | tee output.txt
+        run: cd workflow-test-vulcanexus && docker compose logs chatter | tee output.txt
 
       - name: tree
         run: tree
 
-      - name: show demo-vulcanexus/output.txt content
-        run: cat demo-vulcanexus/output.txt
+      - name: show workflow-test-vulcanexus/output.txt content
+        run: cat workflow-test-vulcanexus/output.txt
 
       - name: "Check if the log contains 'Hello World' string"
-        run: "if [[ $(grep 'Hello World' demo-vulcanexus/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
+        run: "if [[ $(grep 'Hello World' workflow-test-vulcanexus/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
 
   # Push on Docker Hub if tests were finished positively
 

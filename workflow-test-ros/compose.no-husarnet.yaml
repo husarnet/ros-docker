@@ -3,5 +3,5 @@ services:
     build:
       context: .
       args:
-        - ROS_DISTRO=${ROS_DISTRO:-iron}
+        - ROS_DISTRO=${ROS_DISTRO:-jazzy}
     command: ros2 run demo_nodes_cpp ${CHATTER_ROLE:-talker}

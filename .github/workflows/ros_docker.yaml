@@ -47,9 +47,9 @@ jobs:
           file: Dockerfile.ros
           push: true
           build-args: |
-            ROS_DISTRO=iron
+            ROS_DISTRO=jazzy
             TAG=core
-          tags: husarnet/ros:iron-ros-core-testing
+          tags: husarnet/ros:jazzy-ros-core-testing
 
       - name: sleep
         run: sleep 2
@@ -69,22 +69,22 @@ jobs:
         continue-on-error: true
         timeout-minutes: 2
         run: |
-          cd demo-ros
-          export ROS_DISTRO=iron
+          cd workflow-test-ros
+          export ROS_DISTRO=jazzy
           export CHATTER_ROLE=talker
           docker compose -f compose.no-husarnet.yaml up
 
       - name: tree
-        run: cd demo-ros && docker compose logs chatter | tee output.txt
+        run: cd workflow-test-ros && docker compose logs chatter | tee output.txt
 
       - name: tree
         run: tree
 
-      - name: show demo-ros/output.txt content
-        run: cat demo-ros/output.txt
+      - name: show workflow-test-ros/output.txt content
+        run: cat workflow-test-ros/output.txt
 
       - name: "Check if the log contains 'Hello World' string"
-        run: "if [[ $(grep 'Hello World' demo-ros/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
+        run: "if [[ $(grep 'Hello World' workflow-test-ros/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
 
   # Fast DDS simple
 
@@ -95,7 +95,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros-distro: [iron]
+        ros-distro: [jazzy]
         chatter-role: [talker, listener]
 
     steps:
@@ -106,7 +106,7 @@ jobs:
         continue-on-error: true
         timeout-minutes: 2
         run: |
-          cd demo-ros
+          cd workflow-test-ros
           export ROS_DISTRO=${{ matrix.ros-distro }}
           export CHATTER_ROLE=${{ matrix.chatter-role }}
           export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
@@ -118,16 +118,16 @@ jobs:
           docker compose up husarnet chatter
 
       - name: tree
-        run: cd demo-ros && docker compose logs chatter | tee output.txt
+        run: cd workflow-test-ros && docker compose logs chatter | tee output.txt
 
       - name: tree
         run: tree
 
-      - name: show demo-ros/output.txt content
-        run: cat demo-ros/output.txt
+      - name: show workflow-test-ros/output.txt content
+        run: cat workflow-test-ros/output.txt
 
       - name: "Check if the log contains 'Hello World' string"
-        run: "if [[ $(grep 'Hello World' demo-ros/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
+        run: "if [[ $(grep 'Hello World' workflow-test-ros/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
 
   # Fast DDS discovery server
 
@@ -160,8 +160,8 @@ jobs:
         continue-on-error: true
         timeout-minutes: 2
         run: |
-          cd demo-ros
-          export ROS_DISTRO=iron
+          cd workflow-test-ros
+          export ROS_DISTRO=jazzy
           export CHATTER_ROLE=${{ matrix.chatter-role }}
           export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
           export FASTRTPS_DEFAULT_PROFILES_FILE=${{ matrix.dds-xml }}
@@ -173,16 +173,16 @@ jobs:
           docker compose up ${{ matrix.services }}
 
       - name: tree
-        run: cd demo-ros && docker compose logs chatter | tee output.txt
+        run: cd workflow-test-ros && docker compose logs chatter | tee output.txt
 
       - name: tree
         run: tree
 
-      - name: show demo-ros/output.txt content
-        run: cat demo-ros/output.txt
+      - name: show workflow-test-ros/output.txt content
+        run: cat workflow-test-ros/output.txt
 
       - name: "Check if the log contains 'Hello World' string"
-        run: "if [[ $(grep 'Hello World' demo-ros/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
+        run: "if [[ $(grep 'Hello World' workflow-test-ros/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
 
   # Cyclone DDS simple
 
@@ -193,7 +193,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros-distro: [iron]
+        ros-distro: [jazzy]
         chatter-role: [talker, listener]
 
     steps:
@@ -204,7 +204,7 @@ jobs:
         continue-on-error: true
         timeout-minutes: 2
         run: |
-          cd demo-ros
+          cd workflow-test-ros
           export ROS_DISTRO=${{ matrix.ros-distro }}
           export CHATTER_ROLE=${{ matrix.chatter-role }}
           export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
@@ -216,16 +216,16 @@ jobs:
           docker compose up husarnet chatter
 
       - name: tree
-        run: cd demo-ros && docker compose logs chatter | tee output.txt
+        run: cd workflow-test-ros && docker compose logs chatter | tee output.txt
 
       - name: tree
         run: tree
 
-      - name: show demo-ros/output.txt content
-        run: cat demo-ros/output.txt
+      - name: show workflow-test-ros/output.txt content
+        run: cat workflow-test-ros/output.txt
 
       - name: "Check if the log contains 'Hello World' string"
-        run: "if [[ $(grep 'Hello World' demo-ros/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
+        run: "if [[ $(grep 'Hello World' workflow-test-ros/output.txt | wc -l) -eq 0 ]]; then exit 1; fi"
 
   # Push on Docker Hub if tests were finished positively
 
@@ -239,7 +239,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros-distro: [jazzy, iron, humble]
+        ros-distro: [jazzy, humble]
         tag: [core, base]
 
     steps:

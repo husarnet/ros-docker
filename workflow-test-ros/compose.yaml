@@ -1,7 +1,7 @@
 services:
 
   discovery-server:
-    image: husarnet/ros:humble-ros-core-testing
+    image: husarnet/ros:${ROS_DISTRO}-ros-core-testing
     network_mode: service:husarnet
     ipc: service:husarnet
     depends_on: 
@@ -27,7 +27,7 @@ services:
     command: ros2 run demo_nodes_cpp ${CHATTER_ROLE}
 
   husarnet:
-    image: husarnet/husarnet:2.0.22
+    image: husarnet/husarnet:2.0.180
     ipc: shareable
     volumes:
       - /var/lib/husarnet

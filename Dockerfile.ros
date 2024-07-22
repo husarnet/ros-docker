@@ -26,7 +26,6 @@ RUN apt-get update && apt-get install -y \
         gosu \
         ros-$ROS_DISTRO-rmw-fastrtps-cpp \
         ros-$ROS_DISTRO-rmw-cyclonedds-cpp && \
-    apt-get upgrade -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     echo "source \"/opt/ros/$ROS_DISTRO/setup.bash\"" >> /etc/bash.bashrc && \
