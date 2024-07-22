@@ -4,7 +4,9 @@ This demo illustrates how to use the `ROS_DISCOVERY_SERVER` environment variable
 
 For more information on the Fast DDS Discovery Server, refer to the [official documentation](https://docs.ros.org/en/jazzy/Tutorials/Advanced/Discovery-Server/Discovery-Server.html)
 
-## Running the Disovery Server
+## Basic Setup
+
+### Running the Disovery Server
 
 Open a new terminal and execute:
 
@@ -12,7 +14,7 @@ Open a new terminal and execute:
 docker compose -f compose.ds.yaml up
 ```
 
-## Running the Talker
+### Running the Talker
 
 Open a new terminal and execute:
 
@@ -20,12 +22,12 @@ Open a new terminal and execute:
 CHATTER_ROLE=talker docker compose up
 ```
 
-## Running the Listener
+### Running the Listener
 
 Open a new terminal and execute:
 
 ```bash
-CHATTER_ROLE=talker docker compose up
+CHATTER_ROLE=listener docker compose up
 ```
 
 ## Running the [Super Client](https://docs.ros.org/en/jazzy/Tutorials/Advanced/Discovery-Server/Discovery-Server.html#ros-2-introspection)
@@ -81,4 +83,21 @@ data: 'Hello World: 1823'
 ---
 ```
 
+## Running ROS 2 Node available from Host OS
 
+To share the same Husarnet IPv6 address between ROS 2 nodes running in Docker containers and those running directly on your host OS, you need to reuse the same instance of the Husarnet Client, which is likely running on the host OS.
+
+First, run the ROS 2 talker node in Docker:
+
+```bash
+docker compose -f compose.host.yaml up
+```
+
+To listen to the messages from this node on the host, open a separate terminal and run:
+
+```bash
+export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+export ROS_DISCOVERY_SERVER=discovery-server-host:11811
+ros2 run demo_nodes_cpp listener
+# ros2 topic list will not show /chatter topic because we're not using the Super Client config in this demo
+```

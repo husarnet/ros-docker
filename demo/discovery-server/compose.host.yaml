@@ -1,0 +1,14 @@
+name: talker-host
+
+services:
+  talker:
+    build:
+      context: .
+      dockerfile: Dockerfile.husarnet.ros
+    network_mode: host
+    ipc: host
+    environment:
+      - USER
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+      - ROS_DISCOVERY_SERVER=discovery-server-host:11811
+    command: ros2 run demo_nodes_cpp talker
