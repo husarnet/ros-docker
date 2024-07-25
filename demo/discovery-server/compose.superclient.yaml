@@ -6,11 +6,13 @@ services:
     network_mode: service:husarnet
     depends_on: 
       husarnet: { condition: service_healthy } # husarnet service is healthy if all hosts listed in WAIT_HOSTNAMES are reachable
-    volumes:
-      - ./superclient.xml:/superclient.xml
+    # volumes:
+    #   - ./superclient.xml:/superclient.xml
     environment:
       - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-      - FASTRTPS_DEFAULT_PROFILES_FILE=/superclient.xml
+      # - FASTRTPS_DEFAULT_PROFILES_FILE=/superclient.xml
+      - ROS_SUPER_CLIENT=TRUE
+      - ROS_DISCOVERY_SERVER=discovery-server-host:11811
     command: tail -f /dev/null
 
   husarnet:
