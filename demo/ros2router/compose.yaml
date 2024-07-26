@@ -1,0 +1,32 @@
+name: ${CHATTER_ROLE:-talker}-ros2router
+
+services:
+  chatter:
+    build: .
+    command: ros2 run demo_nodes_cpp ${CHATTER_ROLE:-talker}
+
+  ros2router:
+    image: husarnet/ros2router:1.9.0
+    network_mode: service:husarnet
+    restart: always
+    # ipc: host
+    volumes:
+      - ./filter.yaml:/filter.yaml
+    environment:
+      - PARTICIPANTS=husarnet,lan
+      - EXIT_IF_HOST_TABLE_CHANGED=TRUE
+
+  husarnet:
+    image: husarnet/husarnet:2.0.180
+    volumes:
+      - /var/lib/husarnet
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    environment:
+      - HOSTNAME=${CHATTER_ROLE:-talker}-host
+      - JOINCODE
+      - HUSARNET_DEBUG=1
