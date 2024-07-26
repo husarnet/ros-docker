@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CycloneDDS xmlns="https://cdds.io/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd">
+    <Domain Id="any">
+        <General>
+            <NetworkInterfaceAddress>hnet0</NetworkInterfaceAddress>
+            <AllowMulticast>false</AllowMulticast>
+            <FragmentSize>1194B</FragmentSize><!-- default: 1344 B minus Husarnet metadata (~150 B) -->
+            <Transport>udp6</Transport>
+        </General>      
+        <Discovery>
+            <Peers>
+                <Peer Address="talker-host"/>
+                <Peer Address="listener-host"/> 
+            </Peers>
+            <ParticipantIndex>auto</ParticipantIndex>
+            <MaxAutoParticipantIndex>40</MaxAutoParticipantIndex>
+        </Discovery>
+    </Domain>
+</CycloneDDS>
