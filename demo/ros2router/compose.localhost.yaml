@@ -1,0 +1,14 @@
+name: localhost-ros2router
+
+services:
+  ros2router:
+    image: husarnet/ros2router:1.9.0
+    restart: always
+    network_mode: host
+    ipc: host
+    volumes:
+      - ./filter.yaml:/filter.yaml
+    environment:
+      - EXIT_IF_HOST_TABLE_CHANGED=TRUE
+      - PARTICIPANTS=husarnet,shm
+      - USER
