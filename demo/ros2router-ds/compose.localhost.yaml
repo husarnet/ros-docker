@@ -1,0 +1,15 @@
+name: localhost-ros2router
+
+services:
+  ros2router:
+    image: husarnet/ros2router:1.9.2
+    restart: always
+    network_mode: host
+    ipc: host
+    volumes:
+      - ./filter.yaml:/filter.yaml
+    environment:
+      - PARTICIPANTS=husarnet,shm
+      - ROS_DISCOVERY_SERVER=;;;talker-host
+      - ROS_DOMAIN_ID=42
+      - USER

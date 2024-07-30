@@ -1,0 +1,9 @@
+---
+# reliability: true - reliable, false - best effort
+# durability: true - transient local, false - volatile
+allowlist:
+
+  - name: "rt/chatter"
+    type: "std_msgs::msg::dds_::String_"
+    
+blocklist: []

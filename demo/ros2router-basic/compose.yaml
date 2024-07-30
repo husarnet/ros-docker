@@ -6,7 +6,7 @@ services:
     command: ros2 run demo_nodes_cpp ${CHATTER_ROLE:-talker}
 
   ros2router:
-    image: husarnet/ros2router:1.9.0
+    image: husarnet/ros2router:1.9.2
     network_mode: service:husarnet
     restart: always
     # ipc: host

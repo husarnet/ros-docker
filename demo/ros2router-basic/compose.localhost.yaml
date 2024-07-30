@@ -2,7 +2,7 @@ name: localhost-ros2router
 
 services:
   ros2router:
-    image: husarnet/ros2router:1.9.0
+    image: husarnet/ros2router:1.9.2
     restart: always
     network_mode: host
     ipc: host
