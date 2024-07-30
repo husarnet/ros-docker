@@ -22,6 +22,23 @@ CHATTER_ROLE=listener docker compose up --build --force-recreate
 
 ### Running the Listener on localhost
 
+#### With Shared Memory Setup
+
+Open a new terminal and execute:
+
+```bash
+docker compose -f compose.shm.yaml up
+```
+
+Open a new terminal and execute:
+
+```bash
+export FASTRTPS_DEFAULT_PROFILES_FILE=$(pwd)/shm-only.xml
+ros2 run demo_nodes_cpp listener
+```
+
+#### With `ROS_LOCALHOST_ONLY=1`
+
 Open a new terminal and execute:
 
 ```bash
@@ -31,7 +48,6 @@ docker compose -f compose.localhost.yaml up
 Open a new terminal and execute:
 
 ```bash
-export FASTRTPS_DEFAULT_PROFILES_FILE=$(pwd)/shm-only.xml
-export ROS_DOMAIN_ID=42
+export ROS_LOCALHOST_ONLY=1
 ros2 run demo_nodes_cpp listener
 ```

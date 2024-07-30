@@ -8,7 +8,7 @@ services:
       husarnet: { condition: service_healthy } # husarnet service is healthy if all hosts listed in WAIT_HOSTNAMES are reachable
     environment:
       - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-      - ROS_DISCOVERY_SERVER=discovery-server-host:11811
+      - ROS_DISCOVERY_SERVER=ds-host:11811
     command: ros2 run demo_nodes_cpp ${CHATTER_ROLE:-talker}
 
   husarnet:
@@ -25,4 +25,4 @@ services:
       - HOSTNAME=${CHATTER_ROLE:-talker}-host
       - JOINCODE
       - HUSARNET_DEBUG=1
-      - WAIT_HOSTNAMES=discovery-server-host
+      - WAIT_HOSTNAMES=ds-host

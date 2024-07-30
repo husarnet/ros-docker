@@ -1,4 +1,4 @@
-name: localhost-ros2router
+name: shm-ros2router
 
 services:
   ros2router:
@@ -9,6 +9,6 @@ services:
     volumes:
       - ./filter.yaml:/filter.yaml
     environment:
-      - PARTICIPANTS=husarnet,lo
+      - PARTICIPANTS=husarnet,shm
       - ROS_DISCOVERY_SERVER=;;;talker-host
       - USER

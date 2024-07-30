@@ -17,6 +17,6 @@ services:
     devices:
       - /dev/net/tun
     environment:
-      - HOSTNAME=discovery-server-host
+      - HOSTNAME=ds-host
       - JOINCODE
       - HUSARNET_DEBUG=1
