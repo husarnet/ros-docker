@@ -1,8 +1,8 @@
-# Using `husarnet/ros2router`: Peers List Setup
-
-## Basic Setup
+# Using `ROS_STATIC_PEERS` env
 
 Create a `.env` file based on the `.env.template` as a reference, and insert your Husarnet Join Code as the `JOINCODE` env.
+
+## Basic Setup
 
 ### Running the Talker
 
@@ -18,19 +18,4 @@ Open a new terminal and execute:
 
 ```bash
 CHATTER_ROLE=listener docker compose up --build --force-recreate
-```
-
-### Running the Listener on localhost
-
-Open a new terminal and execute:
-
-```bash
-docker compose -f compose.localhost.yaml up
-```
-
-Open a new terminal and execute:
-
-```bash
-export FASTRTPS_DEFAULT_PROFILES_FILE=$(pwd)/shm-only.xml
-ros2 run demo_nodes_cpp listener
 ```

@@ -1,0 +1,32 @@
+name: ${CHATTER_ROLE:-talker}
+
+services:
+  chatter:
+    build: .
+    network_mode: service:husarnet
+    depends_on: 
+      husarnet: { condition: service_healthy } # husarnet service is healthy if all hosts listed in WAIT_HOSTNAMES are reachable
+    volumes:
+      - ./cyclonedds.xml:/var/tmp/cyclonedds.xml
+    environment:
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+      - CYCLONEDDS_URI=file:///var/tmp/cyclonedds.xml # enable IPv6 in Cyclone DDS
+      - ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST #optional: thanks to this env, you make sure all remote traffic goes through Husarnet
+      - ROS_STATIC_PEERS=talker-host;listener-host
+    command: ros2 run demo_nodes_cpp ${CHATTER_ROLE:-talker}
+
+  husarnet:
+    image: husarnet/husarnet:2.0.180
+    volumes:
+      - /var/lib/husarnet
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    environment:
+      - HOSTNAME=${CHATTER_ROLE:-talker}-host
+      - JOINCODE
+      - HUSARNET_DEBUG=1
+      - WAIT_HOSTNAMES=talker-host,listener-host

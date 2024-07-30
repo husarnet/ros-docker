@@ -1,6 +1,8 @@
-# Using `husarnet/ros2router`
+# Using `husarnet/ros2router`: Discovery Server Setup
 
 ## Basic Setup
+
+Create a `.env` file based on the `.env.template` as a reference, and insert your Husarnet Join Code as the `JOINCODE` env.
 
 ### Running the Talker
 

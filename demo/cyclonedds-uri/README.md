@@ -12,6 +12,8 @@ For more information about the Cyclone DDS setup, refer to the following version
 
 ## Basic Setup
 
+Create a `.env` file based on the `.env.template` as a reference, and insert your Husarnet Join Code as the `JOINCODE` env.
+
 ### Running the Talker
 
 Open a new terminal and execute:

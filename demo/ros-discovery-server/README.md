@@ -6,6 +6,8 @@ For more information on the Fast DDS Discovery Server, refer to the [official do
 
 ## Basic Setup
 
+Create a `.env` file based on the `.env.template` as a reference, and insert your Husarnet Join Code as the `JOINCODE` env.
+
 ### Running the Disovery Server
 
 Open a new terminal and execute:
