@@ -1,0 +1,31 @@
+name: ${CHATTER_ROLE:-talker}-fastdds
+
+services:
+  chatter:
+    build:
+      context: .
+      args:
+        - ROS_DISTRO=${CHOOSEN_ROS:-humble} # CHOOSEN_ROS because ROS_DISTRO is already set in host environment
+    network_mode: service:husarnet
+    depends_on: 
+      husarnet: { condition: service_healthy } # husarnet service is healthy if all hosts listed in WAIT_HOSTNAMES are reachable
+    environment:
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+      - FASTRTPS_DEFAULT_PROFILES_FILE=/var/tmp/husarnet-fastdds-simple.xml
+    command: ros2 run demo_nodes_cpp ${CHATTER_ROLE:-talker}
+
+  husarnet:
+    image: husarnet/husarnet:2.0.180
+    volumes:
+      - /var/lib/husarnet
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    environment:
+      - HOSTNAME=${CHATTER_ROLE:-talker}-host
+      - JOINCODE
+      - HUSARNET_DEBUG=1
+      - WAIT_HOSTNAMES=talker-host,listener-host
