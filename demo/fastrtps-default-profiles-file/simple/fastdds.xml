@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dds>
+    <profiles xmlns="http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles">
+        <transport_descriptors>
+            <transport_descriptor>
+                <transport_id>husarnet_transport</transport_id>
+                <type>UDPv6</type>
+            </transport_descriptor>
+        </transport_descriptors>
+
+        <participant profile_name="husarnet_simple_profile" is_default_profile="true">
+            <rtps>
+                <userTransports>
+                    <transport_id>husarnet_transport</transport_id>
+                </userTransports>
+                <useBuiltinTransports>true</useBuiltinTransports>
+                <defaultUnicastLocatorList>
+                    <locator>
+                        <udpv6>
+                            <address>husarnet-local</address>
+                        </udpv6>
+                    </locator>
+                </defaultUnicastLocatorList>
+                <builtin>
+                    <initialPeersList>
+                <!-- Paste Husarion Peers here... Start -->
+                    <locator>
+                        <udpv6>
+                            <address>listener-host</address> <!-- or <address>fc94:a67f:2b47:756c:6e1c:7c05:7361:7378</address> -->
+                        </udpv6>
+                    </locator>
+                    <locator>
+                        <udpv6>
+                            <address>talker-host</address> <!-- or <address>fc94:6260:26e:e057:9bc:8786:4f8a:c7a6</address> -->
+                        </udpv6>
+                    </locator>
+                <!-- End -->
+                    </initialPeersList>
+                    <metatrafficUnicastLocatorList>
+                        <locator>
+                            <udpv6>
+                                <address>husarnet-local</address>
+                            </udpv6>
+                        </locator>
+                    </metatrafficUnicastLocatorList>
+                </builtin>
+            </rtps>
+        </participant>
+    </profiles>
+</dds>

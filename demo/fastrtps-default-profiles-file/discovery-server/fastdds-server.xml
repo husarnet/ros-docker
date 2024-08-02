@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dds>
+    <profiles xmlns="http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles">
+
+        <transport_descriptors>
+            <transport_descriptor>
+                <transport_id>HusarnetTransport</transport_id>
+                <type>UDPv6</type>
+            </transport_descriptor>
+        </transport_descriptors>
+
+        <participant profile_name="server_profile" is_default_profile="true">
+            <rtps>
+                <userTransports>
+                    <transport_id>HusarnetTransport</transport_id>
+                </userTransports>
+                <useBuiltinTransports>true</useBuiltinTransports>
+                <!--
+                    Change the id in XX field:
+                    <prefix>44.53.XX.5f.45.50.52.4f.53.49.4d.41</prefix>
+                -->
+                <prefix>44.53.00.5f.45.50.52.4f.53.49.4d.41</prefix>
+                <builtin>
+                    <discovery_config>
+                        <discoveryProtocol>SERVER</discoveryProtocol>
+                    </discovery_config>
+                    <metatrafficUnicastLocatorList>
+                        <locator>
+                            <udpv6>
+                                <!-- No modifications are necessary — this configuration should be run directly on the discovery server host, so the Husarnet local hostname will suffice. -->
+                                <address>husarnet-local</address>
+                                <port>11811</port>
+                            </udpv6>
+                        </locator>
+                    </metatrafficUnicastLocatorList>
+                </builtin>
+            </rtps>
+        </participant>
+    </profiles>
+</dds>

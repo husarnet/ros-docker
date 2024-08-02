@@ -1,0 +1,24 @@
+name: discovery-server
+
+services:
+  ds:
+    image: ros:humble-ros-core
+    network_mode: service:husarnet
+    volumes:
+      - ./fastdds-server.xml:/var/tmp/fastdds-server.xml
+    command: fastdds discovery -i 0 -x /var/tmp/fastdds-server.xml
+
+  husarnet:
+    image: husarnet/husarnet:2.0.180
+    volumes:
+      - /var/lib/husarnet
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    environment:
+      - HOSTNAME=ds-host
+      - JOINCODE
+      - HUSARNET_DEBUG=1

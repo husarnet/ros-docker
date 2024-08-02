@@ -1,4 +1,4 @@
-name: ${CHATTER_ROLE:-talker}-cyclone
+name: ${CHATTER_ROLE:-talker}-fastdds
 
 services:
   chatter:
@@ -10,10 +10,10 @@ services:
     depends_on: 
       husarnet: { condition: service_healthy } # husarnet service is healthy if all hosts listed in WAIT_HOSTNAMES are reachable
     volumes:
-      - ./cyclonedds-${CYCLONE_SYNTAX:-new}.xml:/var/tmp/cyclonedds.xml
+      - ./fastdds.xml:/var/tmp/fastdds.xml
     environment:
-      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-      - CYCLONEDDS_URI=file:///var/tmp/cyclonedds.xml
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+      - FASTRTPS_DEFAULT_PROFILES_FILE=/var/tmp/fastdds.xml
     command: ros2 run demo_nodes_cpp ${CHATTER_ROLE:-talker}
 
   husarnet:
