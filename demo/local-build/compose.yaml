@@ -1,0 +1,7 @@
+services:
+  ros:
+    build:
+      context: ../../
+      dockerfile: Dockerfile.ros
+      args:
+        - ROS_DISTRO=jazzy

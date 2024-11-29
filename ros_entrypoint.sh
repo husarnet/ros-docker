@@ -8,7 +8,9 @@ fi
 
 # setup ros environment
 source "/opt/ros/$ROS_DISTRO/setup.bash"
+
 test -f "/ros2_ws/install/setup.bash" && source "/ros2_ws/install/setup.bash"
+test -f "/ws_rmw_zenoh/install/setup.bash" && source "/ws_rmw_zenoh/install/setup.bash"
 
 # <additional-user-commands>
 
