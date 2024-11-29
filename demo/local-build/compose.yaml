@@ -1,7 +1,39 @@
+x-ros-custom:
+  &ros-custom-image
+  build:
+    context: ../../
+    dockerfile: Dockerfile.ros
+    args:
+      - ROS_DISTRO=jazzy
+
 services:
-  ros:
-    build:
-      context: ../../
-      dockerfile: Dockerfile.ros
-      args:
-        - ROS_DISTRO=jazzy
+  talker:
+    <<: *ros-custom-image
+    volumes:
+      - ./run.sh:/run.sh
+    environment:
+      - RMW_IMPLEMENTATION=rmw_zenoh_cpp
+    command: /run.sh talker
+
+  listener:
+    <<: *ros-custom-image
+    volumes:
+      - ./run.sh:/run.sh
+    environment:
+      - RMW_IMPLEMENTATION=rmw_zenoh_cpp
+    command: /run.sh listener
+
+  router:
+    <<: *ros-custom-image
+    volumes:
+      - ./router_config.json5:/router_config.json5
+    environment:
+      - RMW_IMPLEMENTATION=rmw_zenoh_cpp
+      - ZENOH_ROUTER_CONFIG_URI=/router_config.json5
+    command: ros2 run rmw_zenoh_cpp rmw_zenohd
+
+  # netstat:
+  #   build:
+  #     dockerfile: Dockerfile.netstat
+  #   tty: true
+  #   command: watch -n 1 netstat -tupn
