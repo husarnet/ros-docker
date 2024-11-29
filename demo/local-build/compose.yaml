@@ -11,25 +11,29 @@ services:
     <<: *ros-custom-image
     volumes:
       - ./run.sh:/run.sh
+      - ./session_config.json5:/session_config.json5
     environment:
       - RMW_IMPLEMENTATION=rmw_zenoh_cpp
+      - ZENOH_SESSION_CONFIG_URI=/session_config.json5
     command: /run.sh talker
 
   listener:
     <<: *ros-custom-image
     volumes:
       - ./run.sh:/run.sh
+      - ./session_config.json5:/session_config.json5
     environment:
       - RMW_IMPLEMENTATION=rmw_zenoh_cpp
+      - ZENOH_SESSION_CONFIG_URI=/session_config.json5
     command: /run.sh listener
 
-  router:
+  router-host:
     <<: *ros-custom-image
-    volumes:
-      - ./router_config.json5:/router_config.json5
+    # volumes:
+    #   - ./router_config.json5:/router_config.json5
     environment:
       - RMW_IMPLEMENTATION=rmw_zenoh_cpp
-      - ZENOH_ROUTER_CONFIG_URI=/router_config.json5
+      # - ZENOH_ROUTER_CONFIG_URI=/router_config.json5
     command: ros2 run rmw_zenoh_cpp rmw_zenohd
 
   # netstat:
