@@ -31,6 +31,8 @@ RUN apt-get update && apt-get install -y \
     echo "source \"/opt/ros/$ROS_DISTRO/setup.bash\"" >> /etc/bash.bashrc && \
     echo "test -f \"/ros2_ws/install/setup.bash\" && source \"/ros2_ws/install/setup.bash\"" >> /etc/bash.bashrc
 
+ENV USER=root
+
 # ## =========================== Optimizing size ===============================
 # FROM scratch
 
