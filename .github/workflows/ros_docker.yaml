@@ -7,7 +7,7 @@ on:
 
 jobs:
   build_push_testing:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     outputs:
       random1: ${{ steps.random1.outputs.random }}
       random2: ${{ steps.random2.outputs.random }}
