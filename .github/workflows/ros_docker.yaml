@@ -59,7 +59,7 @@ jobs:
   test_no_husarnet:
     name: Test no-Husarnet setup
     needs: build_push_testing
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout
@@ -91,7 +91,7 @@ jobs:
   test_fastdds_simple:
     name: Test Fast DDS simple
     needs: build_push_testing
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -134,7 +134,7 @@ jobs:
   test_fastdds_ds:
     name: Test Fast DDS Discovery Server
     needs: build_push_testing
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -189,7 +189,7 @@ jobs:
   test_cyclonedds_simple:
     name: Test Cyclone DDS simple
     needs: build_push_testing
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -230,7 +230,7 @@ jobs:
   # Push on Docker Hub if tests were finished positively
 
   build_push_production:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs:
       - test_no_husarnet
       - test_fastdds_simple
