@@ -1,0 +1,45 @@
+name: talker-zenoh
+
+services:
+  husarnet:
+    image: husarnet/husarnet:2.0.180
+    volumes:
+      - /var/lib/husarnet
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    environment:
+      - HOSTNAME=talker-host
+      - JOINCODE
+      - HUSARNET_DEBUG=1
+      - WAIT_HOSTNAMES=talker-host,listener-host
+
+  talker_router:
+    image: husarnet/ros:${CHOOSEN_ROS:-jazzy}-ros-core
+    network_mode: service:husarnet
+    depends_on: 
+      husarnet: { condition: service_healthy }
+    volumes:
+      - ./rmw-zenoh-router.json5:/var/tmp/rmw-zenoh-router.json5
+    environment:
+      - ZENOH_ROUTER_CONFIG_URI=/var/tmp/rmw-zenoh-router.json5
+    command: ros2 run rmw_zenoh_cpp rmw_zenohd
+
+  talker:
+    build:
+      context: .
+      args:
+        - ROS_DISTRO=${CHOOSEN_ROS:-jazzy}
+    network_mode: service:husarnet
+    depends_on: 
+      husarnet: { condition: service_healthy } # all WAIT_HOSTNAMES are reachable
+      talker_router: { condition: service_started }
+    volumes:
+      - ./rmw-zenoh-session.json5:/var/tmp/rmw-zenoh-session.json5
+    environment:
+      - RMW_IMPLEMENTATION=rmw_zenoh_cpp
+      - ZENOH_SESSION_CONFIG_URI=/var/tmp/rmw-zenoh-session.json5
+    command: ros2 run demo_nodes_cpp talker

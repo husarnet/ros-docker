@@ -1,0 +1,24 @@
+name: ${CHATTER_ROLE:-talker}-zenoh
+
+networks:
+  zenoh-multicast-discovery-net:
+    external: true
+
+services:
+  chatter:
+    build:
+      context: .
+      args:
+        - ROS_DISTRO=${CHOOSEN_ROS:-jazzy}
+    networks:
+      - zenoh-multicast-discovery-net
+    volumes:
+      - ./rmw-zenoh-session.json5:/var/tmp/rmw-zenoh-session.json5
+    environment:
+      - RMW_IMPLEMENTATION=rmw_zenoh_cpp
+      - ZENOH_SESSION_CONFIG_URI=/var/tmp/rmw-zenoh-session.json5
+      - ZENOH_CONFIG_OVERRIDE=listen/endpoints=["tcp/0.0.0.0:0"];scouting/multicast/enabled=true
+      # ^ IMPORTANT: This line specifies that nodes should scout for peers using multicast discovery on all network interfaces.
+      - ZENOH_ROUTER_CHECK_ATTEMPTS=-1
+      # ^ IMPORTANT: This line specifies that the nodes should not attempt to find the router.
+    command: ros2 run demo_nodes_cpp ${CHATTER_ROLE:-talker}
