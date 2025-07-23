@@ -18,7 +18,7 @@ services:
       - WAIT_HOSTNAMES=talker-host,listener-host
 
   talker_router:
-    image: husarnet/ros:${CHOOSEN_ROS:-jazzy}-ros-core
+    image: husarnet/ros:${CHOSEN_ROS:-jazzy}-ros-core
     network_mode: service:husarnet
     depends_on: 
       husarnet: { condition: service_healthy }
@@ -32,7 +32,7 @@ services:
     build:
       context: .
       args:
-        - ROS_DISTRO=${CHOOSEN_ROS:-jazzy}
+        - ROS_DISTRO=${CHOSEN_ROS:-jazzy}
     network_mode: service:husarnet
     depends_on: 
       husarnet: { condition: service_healthy } # all WAIT_HOSTNAMES are reachable

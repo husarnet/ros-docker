@@ -20,7 +20,7 @@ Please note that the provided `rmw-zenoh-session.json5` config file is an unmodi
 
 ## Basic Setup
 
-Create a `.env` file based on the `.env.template` as a reference. There you can change the ROS distribution by setting `CHOOSEN_ROS=jazzy`.
+Create a `.env` file based on the `.env.template` as a reference. There you can change the ROS distribution by setting `CHOSEN_ROS=jazzy`.
 
 ### Creating a Network
 

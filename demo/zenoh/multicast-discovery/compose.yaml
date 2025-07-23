@@ -9,7 +9,7 @@ services:
     build:
       context: .
       args:
-        - ROS_DISTRO=${CHOOSEN_ROS:-jazzy}
+        - ROS_DISTRO=${CHOSEN_ROS:-jazzy}
     networks:
       - zenoh-multicast-discovery-net
     volumes:

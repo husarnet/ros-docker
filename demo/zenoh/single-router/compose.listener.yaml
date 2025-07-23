@@ -21,7 +21,7 @@ services:
     build:
       context: .
       args:
-        - ROS_DISTRO=${CHOOSEN_ROS:-jazzy}
+        - ROS_DISTRO=${CHOSEN_ROS:-jazzy}
     network_mode: service:husarnet
     depends_on: 
       husarnet: { condition: service_healthy } # all WAIT_HOSTNAMES are reachable
