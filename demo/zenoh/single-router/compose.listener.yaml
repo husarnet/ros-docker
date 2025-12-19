@@ -1,0 +1,36 @@
+name: listener-zenoh
+
+services:
+  husarnet:
+    image: husarnet/husarnet:2.0.180
+    volumes:
+      - /var/lib/husarnet
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    environment:
+      - HOSTNAME=listener-host
+      - JOINCODE
+      - HUSARNET_DEBUG=1
+      - WAIT_HOSTNAMES=talker-host,listener-host
+
+  listener:
+    build:
+      context: .
+      args:
+        - ROS_DISTRO=${CHOSEN_ROS:-jazzy}
+    network_mode: service:husarnet
+    depends_on: 
+      husarnet: { condition: service_healthy } # all WAIT_HOSTNAMES are reachable
+    volumes:
+      - ./rmw-zenoh-session.json5:/var/tmp/rmw-zenoh-session.json5
+    environment:
+      - RMW_IMPLEMENTATION=rmw_zenoh_cpp
+      - ZENOH_SESSION_CONFIG_URI=/var/tmp/rmw-zenoh-session.json5
+      - ZENOH_CONFIG_OVERRIDE=mode="client";connect/endpoints=["tcp/talker-host:7447"]
+      # ^ IMPORTANT: This line specifies that nodes should connect to a remote Zenoh router
+    command: ros2 run demo_nodes_cpp listener
+  
